@@ -60,9 +60,9 @@ if st.session_state.status == 0:      # 0 = home, 1-4 math, 5 Chem
     elif chemistry:
         st.session_state.status = 5
         st.rerun()
-    else:
-        st.session_state.status = 0
-        st.rerun()
+    # else:
+    #     st.session_state.status = 0
+    #     st.rerun()
     
 
 elif (st.session_state.status == 1):
