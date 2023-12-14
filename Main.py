@@ -43,8 +43,9 @@ if st.session_state.status == 0:      # 0 = home, 1-4 math, 5 Chem
         button4 = st.button("Unlimited functions")
     st.markdown("")
     st.markdown("")
-    
-    chemistry = st.button("Chemistry")
+    col1, col2, col3, col4 = st.columns(4)
+    with col1:
+        chemistry = st.button("Chemistry")
     if button1:
         st.session_state.status = 1
         st.rerun()
