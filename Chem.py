@@ -45,7 +45,7 @@ def MoleculeStable(element1,element2):
                     oxidation1 += addox1
                     counter1 +=1
             if counter1 == 1 and counter2 ==1:
-                print(element2+element1)
+                print(element2+element1 +"     OG({}) = {}".format(element2,addnox2))
                 sols.append(element2+element1)
             elif counter1 == 1:
                 print(element2+str(counter2) + element1+ "     OG({}) = {}".format(element2,addnox2)) ## addnox2 is the orignal oxidation of the element
@@ -78,7 +78,7 @@ def MoleculeStable(element1,element2):
                 
             if counter1 == 1 and counter2 ==1:
                 print(element1+element2)
-                sols.append(element1+element2)
+                sols.append(element1+element2+"     OG({}) = {}".format(element1,addox1))
             elif counter1 == 1:
                 print(element1 + element2+str(counter2) + "     OG({}) = {}".format(element1,addox1))
                 sols.append(element1 + element2+str(counter2) + "     OG({}) = {}".format(element1,addox1))
