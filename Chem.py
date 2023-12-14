@@ -7,7 +7,7 @@ def MoleculeStable(element1,element2):
     groupV = {"N": [1,3,5, 3.0],"P": [3,5, 2.1], "As": [5, 2.0], "Sb": [4, 1.9], "Bi": [4, 1.8]}
     groupVI = {"O": [6, 3.5],"S": [4,6, 2.5],"Se": [6, 2.4],"Te": [6, 2.1],"Po": [6, 2.0]}
     groupVII = {"F": [7, 4.0], "Cl": [1,3,5,7, 3.0], "Br": [1,3,5,7, 2.8],"I": [1,3,5,7, 2.5],"At": [7, 2.2]}
-    groups =  [groupI,groupII,groupII,groupIII,groupIV,groupV,groupVI, groupVII]
+    groups =  [groupI,groupII,groupIII,groupIV,groupV,groupVI, groupVII]
     # element1 = "Na"
     # element2 = "Cl"
     sols = []
@@ -25,7 +25,7 @@ def MoleculeStable(element1,element2):
             oxnumbs2 = x[element2][:-1]  ## oxidation numbers
             groep2 = groupcounter
 
-
+    
     if En1 > En2:
         if element1 != "H":
             oxidation1 = abs(groep1 - 8)
@@ -56,6 +56,7 @@ def MoleculeStable(element1,element2):
             else:
                 print(element2+str(counter2)+element1 +str(counter1) + "     OG({}) = {}".format(element2,addnox2))
                 sols.append(element2+str(counter2)+element1 +str(counter1) + "     OG({}) = {}".format(element2,addnox2))
+            
     elif En1 < En2:
         if element2 != "H":
             oxidation2 = abs(groep2 - 8)
@@ -88,7 +89,8 @@ def MoleculeStable(element1,element2):
                 print(element1+str(counter1)+element2 +str(counter2) + "     OG({}) = {}".format(element1,addox1))
                 sols.append(element1+str(counter1)+element2 +str(counter2) + "     OG({}) = {}".format(element1,addox1))
     return sols
-#MoleculeStable("Cl", "S")
+
+MoleculeStable("Cl", "S")
 # if element1 in groepI:
 #     En1 = groepI[element1][-1]        ## en worth
 #     oxnumbs1 = groepI[element1][:-1]  ## oxidatie getal(len)
