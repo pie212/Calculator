@@ -88,7 +88,7 @@ def MoleculeStable(element1,element2):
                 print(element1+str(counter1)+element2 +str(counter2) + "     OG({}) = {}".format(element1,addox1))
                 sols.append(element1+str(counter1)+element2 +str(counter2) + "     OG({}) = {}".format(element1,addox1))
     return sols
-MoleculeStable("Cl", "S")
+#MoleculeStable("Cl", "S")
 # if element1 in groepI:
 #     En1 = groepI[element1][-1]        ## en worth
 #     oxnumbs1 = groepI[element1][:-1]  ## oxidatie getal(len)
