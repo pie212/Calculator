@@ -44,7 +44,7 @@ if st.session_state.status == 0:      # 0 = home, 1-4 math, 5 Chem
     st.markdown("")
     st.markdown("")
     
-    Chemistry = st.button("Chemistry")
+    chemistry = st.button("Chemistry")
     if button1:
         st.session_state.status = 1
         st.rerun()
@@ -57,7 +57,7 @@ if st.session_state.status == 0:      # 0 = home, 1-4 math, 5 Chem
     elif button4:
         st.session_state.status = 4
         st.rerun()
-    elif Chemistry:
+    elif chemistry:
         st.session_state.status = 5
         st.rerun()
     else:
