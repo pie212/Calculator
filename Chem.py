@@ -1,13 +1,13 @@
 import math
 def MoleculeStable(element1,element2):
-    groupI = {"H": [1, 2.1], "Li": [1, 1.0], "Na":[1,0.9]}        ## element name, all possible positive oxidiation numbers, and then final number is the EN worth
-    groupII = {"Be": [2, 1.5], "Mg": [2, 1.2], "Ca":[2,1.0]}
-    groupIII = {"Fee": [7, 4.0]}
-    groupIV = {"Fee": [7, 4.0]}
-    groupV = {"Fe": [7, 4.0]}
-    groupVI = {"S": [4,6, 2.5]}
-    groupVII = {"F": [7, 4.0], "Cl": [1,3,5,7, 3.0]}
-    groups =  [groupI,groupII,groupII,groupIV,groupV,groupVI, groupVII]
+    groupI = {"H": [1, 2.1], "Li": [1, 1.0], "Na":[1,0.9], "K":[1,0.8],"Rb":[1,0.8],"Cs":[1,0.7],"Fr":[1,0.7]}        ## element name, all possible positive oxidiation numbers, and then final number is the EN worth
+    groupII = {"Be": [2, 1.5], "Mg": [2, 1.2], "Ca":[2,1.0],"Sr":[2,1.0],"Ba":[2,0.9],"Ra":[2,0.9]}
+    groupIII = {"B": [3, 2.0], "Al":[3,1.5],"Ga":[3,1.6],"In":[3,1.7],"Ti":[3,1.8]}
+    groupIV = {"C": [2,4, 2.5],"Si": [4, 1.8],"Ge": [4, 1.8], "Sn": [2,4, 1.8], "Pb": [2,4, 1.8]}
+    groupV = {"N": [1,3,5, 3.0],"P": [3,5, 2.1], "As": [5, 2.0], "Sb": [4, 1.9], "Bi": [4, 1.8]}
+    groupVI = {"O": [6, 3.5],"S": [4,6, 2.5],"Se": [6, 2.4],"Te": [6, 2.1],"Po": [6, 2.0]}
+    groupVII = {"F": [7, 4.0], "Cl": [1,3,5,7, 3.0], "Br": [1,3,5,7, 2.8],"I": [1,3,5,7, 2.5],"At": [7, 2.2]}
+    groups =  [groupI,groupII,groupII,groupIII,groupIV,groupV,groupVI, groupVII]
     # element1 = "Na"
     # element2 = "Cl"
     sols = []
