@@ -31,10 +31,14 @@ def MoleculeStable(element1,element2):
             oxidation1 = abs(groep1 - 8)
         else:
             oxidation1 = abs(groep1 - 2)
-        addox1 = oxidation1 
-        counter1 = 1
-        counter2 = 1
+        oxidation1Placeholder = oxidation1
+        
         for x in oxnumbs2:
+            oxidation1 = oxidation1Placeholder
+            addox1 = oxidation1 
+
+            counter1 = 1
+            counter2 = 1
             oxidation2 = x
             addnox2 = oxidation2
             while oxidation1 != oxidation2:
@@ -64,10 +68,12 @@ def MoleculeStable(element1,element2):
             oxidation2 = abs(groep2 - 8)
         else:
             oxidation2 = abs(groep2 - 2)
-        addnox2 = oxidation2
+        oxidation2Placeholder = oxidation2
+        addnox2 = oxidation2Placeholder
         counter1 = 1
         counter2 = 1
         for x in oxnumbs1:
+            oxidation2 = oxidation2Placeholder
             oxidation1 = x
             addox1 = oxidation1 
             while oxidation1 != oxidation2:
@@ -92,7 +98,7 @@ def MoleculeStable(element1,element2):
                 sols.append(element1+str(counter1)+element2 +str(counter2) + "     OG({}) = {}".format(element1,addox1))
     return sols
 
-MoleculeStable("P", "O")
+MoleculeStable("O", "Cl")
 # if element1 in groepI:
 #     En1 = groepI[element1][-1]        ## en worth
 #     oxnumbs1 = groepI[element1][:-1]  ## oxidatie getal(len)
