@@ -4,5 +4,5 @@ rdkit
 pubchempy
 requests
 bs4
-PIL
+Pillow
 io
