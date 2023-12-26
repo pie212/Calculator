@@ -1,7 +1,6 @@
 matplotlib
 numpy
-libxrender1 ## for rdkit
-#rdkit
+rdkit
 pubchempy
 requests
 bs4
