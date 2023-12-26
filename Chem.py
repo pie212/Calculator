@@ -1,4 +1,12 @@
 import math
+from rdkit import Chem
+from rdkit.Chem import AllChem
+import pubchempy as pcp
+from rdkit.Chem import Draw
+import requests
+from bs4 import BeautifulSoup
+from PIL import Image
+from io import BytesIO
 def MoleculeStable(element1,element2):
     groupI = {"H": [1, 2.1], "Li": [1, 1.0], "Na":[1,0.9], "K":[1,0.8],"Rb":[1,0.8],"Cs":[1,0.7],"Fr":[1,0.7]}        ## element name, all possible positive oxidiation numbers, and then final number is the EN worth
     groupII = {"Be": [2, 1.5], "Mg": [2, 1.2], "Ca":[2,1.0],"Sr":[2,1.0],"Ba":[2,0.9],"Ra":[2,0.9]}
@@ -97,7 +105,37 @@ def MoleculeStable(element1,element2):
                 print(element1+str(counter1)+element2 +str(counter2) + "     OG({}) = {}".format(element1,addox1))
                 sols.append(element1+str(counter1)+element2 +str(counter2) + "     OG({}) = {}".format(element1,addox1))
     return sols
+def MoleculeVisualizeViaBruto(bruto):
+    compound = pcp.get_compounds(bruto, "formula")[0]     ## searches the Pubchem webpage and grabs the first compund, returns it as compound(ID)
+    try:
+        smiles = compound.canonical_smiles
 
+        mol = Chem.MolFromSmiles(smiles)
+        print(mol)
+        img = Draw.MolToImage(mol)
+        return img
+        #Draw.MolToFile(img, 'saved.png')
+    except:
+        print(compound)
+        # Define the compound ID
+        base_url = 'https://pubchem.ncbi.nlm.nih.gov'
+        start_index = str(compound).find('(') + 1
+        end_index = str(compound).find(')')
+        compound_id = str(compound)[start_index:end_index] 
+        
+
+        # Construct the full image URL
+        img_url = f'{base_url}/image/imgsrv.fcgi?cid={compound_id}&t=l'
+        response = requests.get(img_url)
+
+        if response.status_code == 200:
+            # Open the image from bytes and display it
+            img = Image.open(BytesIO(response.content))
+            #img.show()  # Opens the image in default image viewer
+            #img.save('saved.png')  # Save the image locally
+            return(img)
+        else:
+            print("Failed to fetch the structure image")
 MoleculeStable("Cl", "O")
 # if element1 in groepI:
 #     En1 = groepI[element1][-1]        ## en worth

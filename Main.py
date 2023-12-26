@@ -220,7 +220,13 @@ elif (st.session_state.status == 5):
         #try:
         sols = Chem.MoleculeStable(element1,element2)
         for x in range(len(sols)):
-            st.write(sols[x])
+            compound = split_text = sols[x].split(" ")[0]
+
+            col1, col2 = st.columns(2)
+            with col1:
+                st.write(sols[x])
+            with col2:
+                st.image(Chem.MoleculeVisualizeViaBruto(str(compound)))
         # except:
         #     st.warning("operation failed!")
         
