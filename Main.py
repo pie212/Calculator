@@ -219,15 +219,35 @@ elif (st.session_state.status == 5):
     if (st.button("submit")):
         #try:
         sols = Chem.MoleculeStable(element1,element2)
-        st.error("May take a second to load, please be patient")
+        #st.error("May take a second to load, please be patient")
+        images = []
+        if len(sols) != 1:
+            progress_bar = st.progress(0)
+            added = int(round(100/len(sols)))
+            for x in range(len(sols)):
+                compound = sols[x].split(" ")[0]
+                image = Chem.MoleculeVisualizeViaBruto(str(compound))
+                images.append(image)
+                progress_bar.progress((x + 1) * added)
+            progress_bar.empty()
+        else:
+            with st.spinner('Loading...'):
+
+                for x in range(len(sols)):
+                    compound = sols[x].split(" ")[0]
+                    image = Chem.MoleculeVisualizeViaBruto(str(compound))
+                    images.append(image)
+
+        
+        
         for x in range(len(sols)):
-            compound = split_text = sols[x].split(" ")[0]
+            compound  = sols[x].split(" ")[0]
 
             col1, col2 = st.columns(2)
             with col1:
                 st.write(sols[x])
             with col2:
-                st.image(Chem.MoleculeVisualizeViaBruto(str(compound)))
+                st.image(images[x])
         st.success("Loaded!")
         # except:
         #     st.warning("operation failed!")
