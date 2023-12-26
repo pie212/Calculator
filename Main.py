@@ -219,6 +219,7 @@ elif (st.session_state.status == 5):
     if (st.button("submit")):
         #try:
         sols = Chem.MoleculeStable(element1,element2)
+        st.error("May take a second to load, please be patient")
         for x in range(len(sols)):
             compound = split_text = sols[x].split(" ")[0]
 
@@ -227,6 +228,7 @@ elif (st.session_state.status == 5):
                 st.write(sols[x])
             with col2:
                 st.image(Chem.MoleculeVisualizeViaBruto(str(compound)))
+        st.success("Loaded!")
         # except:
         #     st.warning("operation failed!")
         

@@ -1,8 +1,9 @@
 import math
+import rdkit
 from rdkit import Chem
 from rdkit.Chem import AllChem
-import pubchempy as pcp
 from rdkit.Chem import Draw
+import pubchempy as pcp
 import requests
 from bs4 import BeautifulSoup
 from PIL import Image
