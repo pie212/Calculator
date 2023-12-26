@@ -14,7 +14,7 @@ def MoleculeStable(element1,element2):
     groupIII = {"B": [3, 2.0], "Al":[3,1.5],"Ga":[3,1.6],"In":[3,1.7],"Ti":[3,1.8]}
     groupIV = {"C": [2,4, 2.5],"Si": [4, 1.8],"Ge": [4, 1.8], "Sn": [2,4, 1.8], "Pb": [2,4, 1.8]}
     groupV = {"N": [1,3,5, 3.0],"P": [3,5, 2.1], "As": [5, 2.0], "Sb": [4, 1.9], "Bi": [4, 1.8]}
-    groupVI = {"O": [6, 3.5],"S": [4,6, 2.5],"Se": [6, 2.4],"Te": [6, 2.1],"Po": [6, 2.0]}
+    groupVI = {"O": [6, 3.5],"S": [4,6, 2.5],"Se": [4,6, 2.4],"Te": [6, 2.1],"Po": [6, 2.0]}
     groupVII = {"F": [7, 4.0], "Cl": [1,3,5,7, 3.0], "Br": [1,3,5,7, 2.8],"I": [1,3,5,7, 2.5],"At": [7, 2.2]}
     groups =  [groupI,groupII,groupIII,groupIV,groupV,groupVI, groupVII]
     # element1 = "Na"
