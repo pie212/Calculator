@@ -226,7 +226,7 @@ elif (st.session_state.status == 5):
             with col1:
                 st.write(sols[x])
             with col2:
-                st.image(Chem.MoleculeVisualizeViaBruto(str(compound)))
+                st.image(Chem.MoleculeVisualizeViaBruto(str(compound)))#
         # except:
         #     st.warning("operation failed!")
         
