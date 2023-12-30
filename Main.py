@@ -298,7 +298,7 @@ elif (st.session_state.status == 7):
                     st.header(alkaan)
                 with col2:
                     try:
-                        st.image(alkeenstructures)
+                        st.image(alkaanvisual)
                     except:
                         st.write("Failed to get image!")
             if alkeenstructures:
