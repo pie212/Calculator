@@ -300,7 +300,7 @@ elif (st.session_state.status == 7):
                     try:
                         st.image(alkeenstructures)
                     except:
-                        st.error("Failed to get image!")
+                        st.write("Failed to get image!")
             if alkeenstructures:
                 print(alkeenvisuals)
                 for x in range(len(alkeenstructures)):
