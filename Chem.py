@@ -225,6 +225,7 @@ def CandHinator(carbon,hydrogen,oxygen):
                 print("No Alkanen for this bruto")
                 strucutrealkaan = "None"
                 alkaaanvisual = ""
+                alkaanname = ""
             if hydrogen == ((carbon * 2)):      ## with 1 double bond for tmrw
                 bonds = carbon/2
                 try:
