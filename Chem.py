@@ -194,11 +194,11 @@ def CandHinator(carbon,hydrogen,oxygen):
                 alkaaanvisual = ""
                 for x in range(carbon):
                     if x == 0:
-                        structure.append("CH3")
+                        structure.append("C")
                     elif x == (carbon-1):
-                        structure.append("CH3")
+                        structure.append("C")
                     else:
-                        structure.append("CH2")
+                        structure.append("C")
                     strucutrealkaan = ""
                     for x in range(len(structure)):
                         if x == 0:
@@ -277,7 +277,7 @@ def StructureToSMiles(structure_formula):     ## smiles is for ex: C=C, C-C-C=C
 
 
 #MoleculeStable("Cl", "O")
-#CandHinator(2,20,0)
+CandHinator(2,6,0)
 
 
 

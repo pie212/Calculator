@@ -310,6 +310,8 @@ elif (st.session_state.status == 7):
                         st.write(alkenennames[x])
                     with col2:
                         st.image(alkeenvisuals[x])
+            else:
+                st.header("No Alkenen")
         if Catoms == 0 or Hatoms == 0:
             st.header("No Alkanen")
             st.header("No Alkenen")
