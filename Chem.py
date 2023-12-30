@@ -192,6 +192,7 @@ def CandHinator(carbon,hydrogen,oxygen):
                 structure = []
                 strucutrealkaan = ""
                 alkaaanvisual = ""
+                alkaanname = ""
                 for x in range(carbon):
                     if x == 0:
                         structure.append("C")
@@ -212,6 +213,11 @@ def CandHinator(carbon,hydrogen,oxygen):
                 # mol = Chem.MolFromSmarts(smarts)
                 # smiles = Chem.MolToSmiles(mol)
                 smiles = StructureToSMiles(strucutrealkaan)
+                compound = pcp.get_compounds(smiles, "smiles")    ## SMARTS notation works when searching for SMILES... for some reason....
+                start_index = str(compound).find('(') + 1        ## format the compound
+                end_index = str(compound).find(')')                 ## format the compound
+                compound_id = str(compound)[start_index:end_index]      ## format the compound
+                alkaanname = pcp.Compound.from_cid(compound_id).iupac_name       ## compound name
                 print("sholg")
                 print(smiles)
                 alkaaanvisual = MoleculeVisualizeViaWebsite(smiles)
@@ -255,7 +261,7 @@ def CandHinator(carbon,hydrogen,oxygen):
                 alkenenFormula = []
                 alkenenStructure = []      
                 alkenenNames = []
-            return(strucutrealkaan, alkaaanvisual, alkenenFormula,alkenenStructure, alkenenNames)   ##string, photo, list[strings], list[photos]         
+            return(strucutrealkaan, alkaaanvisual,alkaanname, alkenenFormula,alkenenStructure, alkenenNames)   ##string, photo, list[strings], list[photos]         
 
         elif oxygen > 0:
             print("e")

@@ -286,7 +286,7 @@ elif (st.session_state.status == 7):
             st.rerun()
         if Oatoms == 0 and Catoms > 0 and Hatoms > 0:
             with st.spinner('Loading...'):
-                alkaan, alkaanvisual, alkeenstructures, alkeenvisuals, alkenennames = Chem.CandHinator(Catoms,Hatoms,Oatoms)
+                alkaan, alkaanvisual, alkeenstructures,alkaanname, alkeenvisuals, alkenennames = Chem.CandHinator(Catoms,Hatoms,Oatoms)
             if alkaan == "None":
                 st.header("No Alkaan")
                 st.write("")
@@ -294,8 +294,12 @@ elif (st.session_state.status == 7):
                 st.write("")
             else:
                 col1, col2 = st.columns(2)
+                st.write("")
+                st.write("")
+                st.write("")
                 with col1:
                     st.header(alkaan)
+                    st.header(alkaanname)
                 with col2:
                     try:
                         st.image(alkaanvisual)
