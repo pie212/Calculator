@@ -15,7 +15,7 @@ def MoleculeStable(element1,element2):
     groupIV = {"C": [2,4, 2.5],"Si": [4, 1.8],"Ge": [4, 1.8], "Sn": [2,4, 1.8], "Pb": [2,4, 1.8]}
     groupV = {"N": [1,3,5, 3.0],"P": [3,5, 2.1], "As": [5, 2.0], "Sb": [4, 1.9], "Bi": [4, 1.8]}
     groupVI = {"O": [6, 3.5],"S": [2,4,6, 2.5],"Se": [4,6, 2.4],"Te": [6, 2.1],"Po": [6, 2.0]}  ## quick bit of thinking i should think of. So we know that S en F leads to SF2 and SF6 because we have the structure of -        which is 6 total electrons on the shell, 4 valence ones. In SF2 F bonds with the free electrons but since it has 7 electrons they each share 1 electron, causing the need for 2 F atoms to be present.                                                     *
-    groupVII = {"F": [7, 4.0], "Cl": [1,3,5,7, 3.0], "Br": [1,3,5,7, 2.8],"I": [1,3,5,7, 2.5],"At": [7, 2.2]}                                                                                    #                     *    *     However with SF6 the 2 valence pairs break, allowing the 6 electrons to bond with 6 Fluor electrons, so the question I want to ask in a week is, can we predict this for all elements? And why could we not keep 1 pair and get SF4, we would then have  *   *
+    groupVII = {"F": [7, 4.0], "Cl": [1,3,5,7, 3.0], "Br": [1,3,5,7, 2.8],"I": [1,3,5,7, 2.5],"At": [7, 2.2]}                                                                                    #                     *    *     However with SF6 the 2 valence pairs break, allowing the 6 electrons to bond with 6 Fluor electrons, so the question I want to ask in a week is, can we predict this for all elements? And why could we not keep 1 pair and get SF4, we would then have  *   *    -->> but in SF6 S would then have 12 valence electrons, not 6... HOW???
     groups =  [groupI,groupII,groupIII,groupIV,groupV,groupVI, groupVII]                                                                                                                         #                       -                                                                                                                                                                                                                                                                   -        ## how can C have -2??? 2 pictures trying to figure that out on my desktop
     # element1 = "Na"
     # element2 = "Cl"
@@ -23,7 +23,7 @@ def MoleculeStable(element1,element2):
 
 
     groupcounter = 0
-    for x in groups: 
+    for x in groups:
         groupcounter +=1                ## manually count the group number
         if element1 in x:
             En1 = x[element1][-1]        ## en worth
@@ -34,8 +34,10 @@ def MoleculeStable(element1,element2):
             oxnumbs2 = x[element2][:-1]  ## oxidation numbers
             groep2 = groupcounter
 
-    
-    if En1 > En2:
+    ###########3 EXCEPTIONS ##########3
+    if element1 == "Cl" and element2 == "Cl":
+        sols.append("Cl2") 
+    elif En1 > En2:
         if element1 != "H":
             oxidation1 = abs(groep1 - 8)
         else:
@@ -107,7 +109,15 @@ def MoleculeStable(element1,element2):
                 sols.append(element1+str(counter1)+element2 +str(counter2) + "     OG({}) = {}".format(element1,addox1))
     return sols
 def MoleculeVisualizeViaBruto(bruto):
-    compound = pcp.get_compounds(bruto, "formula")[0]     ## searches the Pubchem webpage and grabs the first compund, returns it as compound(ID)
+    
+    ## known exceptions
+    if bruto == "SO3":
+        compound = pcp.get_compounds(bruto, "formula")[1]     ## searches the Pubchem webpage and grabs the first compund, returns it as compound(ID)
+    else:
+        try:
+            compound = pcp.get_compounds(bruto, "formula")[0]     ## searches the Pubchem webpage and grabs the first compund, returns it as compound(ID)
+        except:
+            compound = ""
     try:
         smiles = compound.canonical_smiles
 
@@ -117,27 +127,160 @@ def MoleculeVisualizeViaBruto(bruto):
         return img
         #Draw.MolToFile(img, 'saved.png')
     except:
-        print(compound)
-        # Define the compound ID
-        base_url = 'https://pubchem.ncbi.nlm.nih.gov'
-        start_index = str(compound).find('(') + 1
-        end_index = str(compound).find(')')
-        compound_id = str(compound)[start_index:end_index] 
-        
+        try:
+            print(compound)
+            # Define the compound ID
+            base_url = 'https://pubchem.ncbi.nlm.nih.gov'
+            start_index = str(compound).find('(') + 1
+            end_index = str(compound).find(')')
+            compound_id = str(compound)[start_index:end_index] 
+            
 
-        # Construct the full image URL
-        img_url = f'{base_url}/image/imgsrv.fcgi?cid={compound_id}&t=l'
-        response = requests.get(img_url)
+            # Construct the full image URL
+            img_url = f'{base_url}/image/imgsrv.fcgi?cid={compound_id}&t=l'
+            response = requests.get(img_url)
 
-        if response.status_code == 200:
-            # Open the image from bytes and display it
-            img = Image.open(BytesIO(response.content))
-            #img.show()  # Opens the image in default image viewer
-            #img.save('saved.png')  # Save the image locally
+            if response.status_code == 200:
+                # Open the image from bytes and display it
+                img = Image.open(BytesIO(response.content))
+                #img.show()  # Opens the image in default image viewer
+                #img.save('saved.png')  # Save the image locally
+                return(img)
+                
+            else:
+                print("Failed to fetch the structure image")
+                img = Image.open("error.png")
+                return(img)
+        except:
+            img = Image.open("error.png")
             return(img)
-        else:
-            print("Failed to fetch the structure image")
-MoleculeStable("Cl", "O")
+                
+
+def MoleculeVisualizeViaWebsite(smarts):
+    # compound = pcp.get_compounds(smiles, "smiles")[0]     ## searches the Pubchem webpage and grabs the first compund, returns it as compound(ID)
+    mol = Chem.MolFromSmarts(smarts)
+    # smiles = Chem.MolToSmiles(mol)
+    #mol = Chem.MolFromSmiles(smiles)
+    print(mol)
+    img = Draw.MolToImage(mol)
+    return(img)
+def structural_to_smarts(structural_formula): ## hasnt been used.... dont think we need it
+    # Split the formula into parts (atoms and bonds)
+    parts = structural_formula.split('-')
+
+    # Convert to SMARTS notation
+    smarts_formula = ''
+    for part in parts:
+        if part.startswith('C'):
+            # Append the carbon atom
+            smarts_formula += 'C'
+        elif part.startswith('H'):
+            # Skip hydrogen atoms in this representation
+            pass
+        elif part == '':
+            # Append the bond
+            smarts_formula += '-'
+
+    return smarts_formula
+def CandHinator(carbon,hydrogen,oxygen):
+    print("test")          ### single bond C-C     Double bond C=C   triple bond C#C
+    if carbon > 0 and hydrogen > 0:
+        if oxygen == 0:
+            ##### alkanen alkenen en alkynen
+            ## alkaan
+            if hydrogen == ((carbon * 2)+2):
+                structure = []
+                strucutrealkaan = ""
+                alkaaanvisual = ""
+                for x in range(carbon):
+                    if x == 0:
+                        structure.append("CH3")
+                    elif x == (carbon-1):
+                        structure.append("CH3")
+                    else:
+                        structure.append("CH2")
+                    strucutrealkaan = ""
+                    for x in range(len(structure)):
+                        if x == 0:
+                            strucutrealkaan += structure[x]
+                        else:
+                            strucutrealkaan +="-" 
+                            strucutrealkaan += structure[x]
+                # print(strucutrealkaan)
+                # smarts = structural_to_smarts(strucutrealkaan)
+                # print(smarts)
+                # mol = Chem.MolFromSmarts(smarts)
+                # smiles = Chem.MolToSmiles(mol)
+                smiles = StructureToSMiles(strucutrealkaan)
+                print("sholg")
+                print(smiles)
+                alkaaanvisual = MoleculeVisualizeViaWebsite(smiles)
+            else:
+                print("No Alkanen for this bruto")
+                strucutrealkaan = "None"
+                alkaaanvisual = ""
+            if hydrogen == ((carbon * 2)):      ## with 1 double bond for tmrw
+                bonds = carbon/2
+                try:
+                    bonds = int(bonds)
+                except:
+                    bonds = bonds + 0.5
+                    bonds = int(bonds)
+                print(bonds)
+                alkenenFormula = []
+                alkenenStructure = []
+                alkenenNames = []
+                for x in range(bonds):
+                    structurealkeen = ""
+                    for y in range(carbon - 1):
+                        if y == 0:
+                            structurealkeen += "C"
+                        if y == x:
+                            structurealkeen += "=C"
+                        else:
+                            structurealkeen += "-C"
+                    smiles = StructureToSMiles(structurealkeen)        ###### converts from for ex C=C to [C;X2]=[C;X2]
+                    compound = pcp.get_compounds(smiles, "smiles")    ## SMARTS notation works when searching for SMILES... for some reason....
+                    start_index = str(compound).find('(') + 1        ## format the compound
+                    end_index = str(compound).find(')')                 ## format the compound
+                    compound_id = str(compound)[start_index:end_index]      ## format the compound
+                    name = pcp.Compound.from_cid(compound_id).iupac_name       ## compound name
+                    print("sholg")
+                    print(smiles)
+                    alkenenFormula.append(structurealkeen)
+                    alkenenStructure.append(MoleculeVisualizeViaWebsite(smiles))
+                    alkenenNames.append(name)
+            else:
+                print("No Alkenen for this bruto")
+                alkenenFormula = []
+                alkenenStructure = []      
+                alkenenNames = []
+            return(strucutrealkaan, alkaaanvisual, alkenenFormula,alkenenStructure, alkenenNames)   ##string, photo, list[strings], list[photos]         
+
+        elif oxygen > 0:
+            print("e")
+    else:
+        return("None")
+        
+    
+      
+def StructureToSMiles(structure_formula):     ## smiles is for ex: C=C, C-C-C=C
+    mol = Chem.MolFromSmiles(structure_formula) 
+
+    # Convert the molecule to SMARTS
+    smarts_pattern = Chem.MolToSmarts(mol)         ## Smarts is [C;X2]=[C;X2] for C=C
+
+    return(smarts_pattern)  # This should print '[C;X2]=[C;X2]'
+
+
+
+
+
+#MoleculeStable("Cl", "O")
+#CandHinator(2,20,0)
+
+
+
 # if element1 in groepI:
 #     En1 = groepI[element1][-1]        ## en worth
 #     oxnumbs1 = groepI[element1][:-1]  ## oxidatie getal(len)

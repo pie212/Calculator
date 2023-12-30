@@ -4,6 +4,8 @@ import Math
 import Chem
 import matplotlib.pyplot as plt
 import numpy as np
+from PIL import Image
+from io import BytesIO
 # Write text
 if 'status' not in st.session_state:
     st.session_state.status = 0               
@@ -59,12 +61,18 @@ elif (st.session_state.status == 2):
         moleculebalancer = st.button("Molecule Balancer")
     with col2:
         reaction = st.button("Reaction balancer (work in progress)")
+    with col3:
+        CandHinator = st.button("C and H inator")
     if moleculebalancer:
         st.session_state.status = 5
         st.rerun()
     elif reaction:
         st.session_state.status = 6
         st.rerun()
+    elif CandHinator:
+        st.session_state.status = 7
+        st.rerun()
+    
 
 elif (st.session_state.status == 3):
     st.header("Function INFO")
@@ -221,7 +229,7 @@ elif (st.session_state.status == 5):
         sols = Chem.MoleculeStable(element1,element2)
         #st.error("May take a second to load, please be patient")
         images = []
-        if len(sols) != 1:
+        if len(sols) != 1 and len(sols) != 0:
             progress_bar = st.progress(0)
             added = int(round(100/len(sols)))
             for x in range(len(sols)):
@@ -230,6 +238,8 @@ elif (st.session_state.status == 5):
                 images.append(image)
                 progress_bar.progress((x + 1) * added)
             progress_bar.empty()
+        elif len(sols) == 0:
+            st.error("Error, this compound may exist but the program ran into an error")
         else:
             with st.spinner('Loading...'):
 
@@ -251,8 +261,61 @@ elif (st.session_state.status == 5):
         st.success("Loaded!")
         # except:
         #     st.warning("operation failed!")
+elif (st.session_state.status == 6):      
+    st.write("work in progress")
+elif (st.session_state.status == 7):
+    col1,col2,col3, col4,col5, col6 = st.columns([0.02,0.1,0.02,0.1,0.02,0.1])
+    with col1:
+        st.header("C")
+    with col2:
+        Catoms = st.text_input(value=0, key=1, label="")
+    with col3:
+        st.header("H")
+    with col4:
+        Hatoms = st.text_input(value=0, key=2, label="")
+    with col5:
+        st.header("O")
+    with col6:
+        Oatoms = st.text_input(value=0, key=3, label="")
+    if (st.button("submit")):
+        try:
+            Hatoms = int(Hatoms)
+            Catoms = int(Catoms)
+            Oatoms = int(Oatoms)
+        except:
+            st.rerun()
+        if Oatoms == 0 and Catoms > 0 and Hatoms > 0:
+            with st.spinner('Loading...'):
+                alkaan, alkaanvisual, alkeenstructures, alkeenvisuals, alkenennames = Chem.CandHinator(Catoms,Hatoms,Oatoms)
+            if alkaan == "None":
+                st.header("No Alkaan")
+                st.write("")
+                st.write("")
+                st.write("")
+            else:
+                col1, col2 = st.columns(2)
+                with col1:
+                    st.header(alkaan)
+                with col2:
+                    try:
+                        st.image(alkeenstructures)
+                    except:
+                        st.error("Failed to get image!")
+            if alkeenstructures:
+                print(alkeenvisuals)
+                for x in range(len(alkeenstructures)):
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        st.write(alkeenstructures[x])
+                        st.write(alkenennames[x])
+                    with col2:
+                        st.image(alkeenvisuals[x])
+        if Catoms == 0 or Hatoms == 0:
+            st.header("No Alkanen")
+            st.header("No Alkenen")
+
+
         
-      
 if st.session_state.status != 0:
     
 
