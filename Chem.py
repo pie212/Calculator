@@ -212,7 +212,7 @@ def CandHinator(carbon,hydrogen,oxygen):
                 # print(smarts)
                 # mol = Chem.MolFromSmarts(smarts)
                 # smiles = Chem.MolToSmiles(mol)
-                smiles = StructureToSMiles(strucutrealkaan)
+                smiles = StructureToSmarts(strucutrealkaan)
                 compound = pcp.get_compounds(smiles, "smiles")    ## SMARTS notation works when searching for SMILES... for some reason....
                 start_index = str(compound).find('(') + 1        ## format the compound
                 end_index = str(compound).find(')')                 ## format the compound
@@ -246,7 +246,7 @@ def CandHinator(carbon,hydrogen,oxygen):
                             structurealkeen += "=C"
                         else:
                             structurealkeen += "-C"
-                    smiles = StructureToSMiles(structurealkeen)        ###### converts from for ex C=C to [C;X2]=[C;X2]
+                    smiles = StructureToSmarts(structurealkeen)        ###### converts from for ex C=C to [C;X2]=[C;X2]
                     compound = pcp.get_compounds(smiles, "smiles")    ## SMARTS notation works when searching for SMILES... for some reason....
                     start_index = str(compound).find('(') + 1        ## format the compound
                     end_index = str(compound).find(')')                 ## format the compound
@@ -268,10 +268,16 @@ def CandHinator(carbon,hydrogen,oxygen):
             print("e")
     else:
         return("None")
-        
-    
+def CandHguesser(carbon):
+    HydrogenAlkanen = ((carbon * 2)+2)
+    HydrogenAlkenen = carbon * 2
+    CandHguesser = CandHguesser(carbon,HydrogenAlkanen)
+    strucutrealkaan, alkaaanvisual,alkaanname = CandHguesser[0],CandHguesser[1],CandHguesser[2],CandHguesser[3]
+    CandHguesser = CandHguesser(carbon,HydrogenAlkenen)
+    alkenenFormula,alkenenStructure, alkenenNames = CandHguesser[4], CandHguesser[5]
+    print(strucutrealkaan,alkaanname)
       
-def StructureToSMiles(structure_formula):     ## smiles is for ex: C=C, C-C-C=C
+def StructureToSmarts(structure_formula):     ## smiles is for ex: C=C, C-C-C=C
     mol = Chem.MolFromSmiles(structure_formula) 
 
     # Convert the molecule to SMARTS
