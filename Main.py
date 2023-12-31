@@ -63,6 +63,8 @@ elif (st.session_state.status == 2):
         reaction = st.button("Reaction balancer (work in progress)")
     with col3:
         CandHinator = st.button("C and H inator")
+    with col4:
+        CandHguesser = st.button("C and H guesser")
     if moleculebalancer:
         st.session_state.status = 5
         st.rerun()
@@ -71,6 +73,9 @@ elif (st.session_state.status == 2):
         st.rerun()
     elif CandHinator:
         st.session_state.status = 7
+        st.rerun()
+    elif CandHguesser:
+        st.session_state.status = 8
         st.rerun()
     
 
@@ -286,7 +291,7 @@ elif (st.session_state.status == 7):
             st.rerun()
         if Oatoms == 0 and Catoms > 0 and Hatoms > 0:
             with st.spinner('Loading...'):
-                alkaan, alkaanvisual,alkaanname, alkeenstructures, alkeenvisuals, alkenennames = Chem.CandHinator(Catoms,Hatoms,Oatoms)
+                alkaan, alkaanvisual,alkaanname, alkaanbruto,        alkeenstructures, alkeenvisuals, alkenennames, alkenenbrutos,        alkynenstructures,alkynenvisuals, alkynennames, alkynenbrutos = Chem.CandHinator(Catoms,Hatoms,Oatoms)
             if alkaan == "None":
                 st.header("No Alkaan")
                 st.write("")
@@ -298,8 +303,9 @@ elif (st.session_state.status == 7):
                 st.write("")
                 st.write("")
                 with col1:
-                    st.header(alkaan)
-                    st.header(alkaanname)
+                    st.write(alkaan)
+                    st.write(alkaanname)
+                    st.write(alkaanbruto)
                 with col2:
                     try:
                         st.image(alkaanvisual)
@@ -312,15 +318,91 @@ elif (st.session_state.status == 7):
                     with col1:
                         st.write(alkeenstructures[x])
                         st.write(alkenennames[x])
+                        st.write(alkenenbrutos[x])
                     with col2:
                         st.image(alkeenvisuals[x])
             else:
                 st.header("No Alkenen")
+            if alkynenstructures:
+                print(alkeenvisuals)
+                for x in range(len(alkynenstructures)):
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        st.write(alkynenstructures[x])
+                        st.write(alkynennames[x])
+                        st.write(alkynenbrutos[x])
+                    with col2:
+                        st.image(alkynenvisuals[x])
+            else:
+                st.header("No Alkynen")
         if Catoms == 0 or Hatoms == 0:
             st.header("No Alkanen")
             st.header("No Alkenen")
+            st.header("No Alkynen")
 
-
+elif (st.session_state.status == 8):
+    col1, col2 = st.columns(2)
+    with col1:
+        st.header("C atoms")
+    with col2:
+        Catoms = st.text_input(value=0, label="")
+    if (st.button("Submit")):
+        try:
+            int(Catoms)
+        except:
+            st.rerun()
+        if Catoms == "0":
+            st.rerun()
+            
+        with st.spinner('Loading...'):
+                    alkaan, alkaanvisual,alkaanname, alkaanbruto,        alkeenstructures, alkeenvisuals, alkenennames, alkenenbruto,        alkynenstructures,alkynenvisuals, alkynennames, alkynenbrutos = Chem.CandHguesser(int(Catoms))
+        if alkaan == "None":
+                    st.header("No Alkaan")
+                    st.write("")
+                    st.write("")
+                    st.write("")
+        else:
+            col1, col2 = st.columns(2)
+            st.write("")
+            st.write("")
+            st.write("")
+            with col1:
+                st.write(alkaan)
+                st.write(alkaanname)
+                st.write(alkaanbruto)
+            with col2:
+                try:
+                    st.image(alkaanvisual)
+                except:
+                    st.write("Failed to get image!")
+        if alkeenstructures:
+            print(alkeenvisuals)
+            for x in range(len(alkeenstructures)):
+                col1, col2 = st.columns(2)
+                with col1:
+                    st.write(alkeenstructures[x])
+                    st.write(alkenennames[x])
+                    st.write(alkenenbruto[x])
+                with col2:
+                    st.image(alkeenvisuals[x])
+        else:
+                st.header("No Alkenen")
+        if alkynenstructures:
+                print(alkeenvisuals)
+                for x in range(len(alkynenstructures)):
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        st.write(alkynenstructures[x])
+                        st.write(alkynennames[x])
+                        st.write(alkynenbrutos[x])
+                    with col2:
+                        st.image(alkynenvisuals[x])
+        else:
+            st.header("No Alkynen")
+        if Catoms == 0:
+            st.header("No Alkanen")
+            st.header("No Alkenen")
+            st.header("No Alkynen")
         
 if st.session_state.status != 0:
     
