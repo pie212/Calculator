@@ -273,15 +273,15 @@ elif (st.session_state.status == 7):
     with col1:
         st.header("C")
     with col2:
-        Catoms = st.text_input(value=0, key=1, label="")
+        Catoms = st.text_input(value=0, key=1, label="Carbon atoms", label_visibility = "hidden")
     with col3:
         st.header("H")
     with col4:
-        Hatoms = st.text_input(value=0, key=2, label="")
+        Hatoms = st.text_input(value=0, key=2, label="Hydrogen atoms", label_visibility = "hidden")
     with col5:
         st.header("O")
     with col6:
-        Oatoms = st.text_input(value=0, key=3, label="")
+        Oatoms = st.text_input(value=0, key=3, label="Oxygen atoms", label_visibility = "hidden")
     if (st.button("submit")):
         try:
             Hatoms = int(Hatoms)
@@ -291,6 +291,7 @@ elif (st.session_state.status == 7):
             st.rerun()
         if Oatoms == 0 and Catoms > 0 and Hatoms > 0:
             with st.spinner('Loading...'):
+                
                 alkaan, alkaanvisual,alkaanname, alkaanbruto,        alkeenstructures, alkeenvisuals, alkenennames, alkenenbrutos,        alkynenstructures,alkynenvisuals, alkynennames, alkynenbrutos = Chem.CandHinator(Catoms,Hatoms,Oatoms)
             if alkaan == "None":
                 st.header("No Alkaan")
@@ -312,7 +313,7 @@ elif (st.session_state.status == 7):
                     except:
                         st.write("Failed to get image!")
             if alkeenstructures:
-                print(alkeenvisuals)
+                
                 for x in range(len(alkeenstructures)):
                     col1, col2 = st.columns(2)
                     with col1:
@@ -324,7 +325,7 @@ elif (st.session_state.status == 7):
             else:
                 st.header("No Alkenen")
             if alkynenstructures:
-                print(alkeenvisuals)
+                
                 for x in range(len(alkynenstructures)):
                     col1, col2 = st.columns(2)
                     with col1:
@@ -335,17 +336,40 @@ elif (st.session_state.status == 7):
                         st.image(alkynenvisuals[x])
             else:
                 st.header("No Alkynen")
+            st.header("No Alcohols")
+        elif Catoms > 0 and Hatoms > 0:
+            with st.spinner('Loading...'):
+                alcoholStructure,alcoholvisuals,alcoholNames,alcoholBrutos = Chem.CandHinator(Catoms,Hatoms,Oatoms)
+            if alcoholStructure == "None":
+                st.header("No Alkanen")
+                st.header("No Alkenen")
+                st.header("No Alkynen")
+                st.header("No Alcohols")
+        
+            elif alcoholStructure:
+                print(alcoholvisuals)
+                for x in range(len(alcoholStructure)):
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        st.write(alcoholStructure[x])
+                        st.write(alcoholNames[x])
+                        st.write(alcoholBrutos[x])
+                    with col2:
+                        st.image(alcoholvisuals[x])
+        else:
+            st.header("No Alcohols")
         if Catoms == 0 or Hatoms == 0:
             st.header("No Alkanen")
             st.header("No Alkenen")
             st.header("No Alkynen")
+            st.header("No Alcohols")
 
 elif (st.session_state.status == 8):
     col1, col2 = st.columns(2)
     with col1:
         st.header("C atoms")
     with col2:
-        Catoms = st.text_input(value=0, label="")
+        Catoms = st.text_input(value=0, label="Carbon atoms", label_visibility = "hidden")
     if (st.button("Submit")):
         try:
             int(Catoms)
@@ -355,7 +379,8 @@ elif (st.session_state.status == 8):
             st.rerun()
             
         with st.spinner('Loading...'):
-                    alkaan, alkaanvisual,alkaanname, alkaanbruto,        alkeenstructures, alkeenvisuals, alkenennames, alkenenbruto,        alkynenstructures,alkynenvisuals, alkynennames, alkynenbrutos = Chem.CandHguesser(int(Catoms))
+                    
+                    alkaan, alkaanvisual,alkaanname, alkaanbruto,        alkeenstructures, alkeenvisuals, alkenennames, alkenenbruto,        alkynenstructures,alkynenvisuals, alkynennames, alkynenbrutos = Chem.carboninator(int(Catoms))
         if alkaan == "None":
                     st.header("No Alkaan")
                     st.write("")
@@ -376,7 +401,7 @@ elif (st.session_state.status == 8):
                 except:
                     st.write("Failed to get image!")
         if alkeenstructures:
-            print(alkeenvisuals)
+            
             for x in range(len(alkeenstructures)):
                 col1, col2 = st.columns(2)
                 with col1:
@@ -388,7 +413,7 @@ elif (st.session_state.status == 8):
         else:
                 st.header("No Alkenen")
         if alkynenstructures:
-                print(alkeenvisuals)
+                
                 for x in range(len(alkynenstructures)):
                     col1, col2 = st.columns(2)
                     with col1:

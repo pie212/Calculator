@@ -122,13 +122,13 @@ def MoleculeVisualizeViaBruto(bruto):
         smiles = compound.canonical_smiles
 
         mol = Chem.MolFromSmiles(smiles)
-        print(mol)
+        #print(mol)
         img = Draw.MolToImage(mol)
         return img
         #Draw.MolToFile(img, 'saved.png')
     except:
         try:
-            print(compound)
+            #print(compound)
             # Define the compound ID
             base_url = 'https://pubchem.ncbi.nlm.nih.gov'
             start_index = str(compound).find('(') + 1
@@ -148,7 +148,7 @@ def MoleculeVisualizeViaBruto(bruto):
                 return(img)
                 
             else:
-                print("Failed to fetch the structure image")
+                #print("Failed to fetch the structure image")
                 img = Image.open("error.png")
                 return(img)
         except:
@@ -157,7 +157,7 @@ def MoleculeVisualizeViaBruto(bruto):
                 
 def IdToPhotoViaWebsite(compound_id):
     try:
-        print(compound_id)
+        #print(compound_id)
         # Define the compound ID
         base_url = 'https://pubchem.ncbi.nlm.nih.gov'
          
@@ -187,7 +187,7 @@ def MoleculeVisualizeViaSmarts(smarts):
     mol = Chem.MolFromSmarts(smarts)
     # smiles = Chem.MolToSmiles(mol)
     #mol = Chem.MolFromSmiles(smiles)
-    print(mol)
+    #print(mol)
     img = Draw.MolToImage(mol)
     return(img)
 def structural_to_smiles(structural_formula):    ## hasnt been used.... dont think we need it
@@ -220,6 +220,7 @@ def CandHinator(carbon,hydrogen,oxygen):         ### ONLY ONE DOUBLE OR TRIPLE B
                 alkaaanvisual = ""              ## define all our variables
                 alkaanname = ""                 ## define all our variables
                 alkaanbruto = ""                ## define all our variables
+                print("##################### ALKAAN #################")
                 for x in range(carbon):         
                     # if x == 0:
                     #     structure.append("CH3")
@@ -246,12 +247,17 @@ def CandHinator(carbon,hydrogen,oxygen):         ### ONLY ONE DOUBLE OR TRIPLE B
                 compound_id = str(compound)[start_index:end_index]      ## format the compound
                 alkaanname = pcp.Compound.from_cid(compound_id).iupac_name       ## compound name
                 alkaanbruto = pcp.Compound.from_cid(compound_id).molecular_formula
-                print(compound_id)
-                print("######")
-                print(smarts)
+                print("Compound ID: " +str(compound_id))
+                print("SMARTS: " + str(smarts))
+                print("Structure: " + structurealkeen)
+                print("##")
                 alkaaanvisual = MoleculeVisualizeViaSmarts(smarts)
             else:
-                print("No Alkanen for this bruto")
+                print("##################### ALKAAN #################")
+                print("Compound ID: None")
+                print("SMARTS: None")
+                print("Structure: None")
+                print("##")
                 strucutrealkaan = "None"
                 alkaaanvisual = ""
                 alkaanname = ""
@@ -268,6 +274,7 @@ def CandHinator(carbon,hydrogen,oxygen):         ### ONLY ONE DOUBLE OR TRIPLE B
                 alkenenStructure = []
                 alkenenNames = []
                 alkenenBrutos = []
+                print("####################################### ALKEEN #######################################")
                 for x in range(bonds):
                     structurealkeen = ""
                     for y in range(carbon - 1):
@@ -286,47 +293,28 @@ def CandHinator(carbon,hydrogen,oxygen):         ### ONLY ONE DOUBLE OR TRIPLE B
                     CompoundInfo = pcp.Compound.from_cid(compound_id)       ## compound name
                     alkeen_name = CompoundInfo.iupac_name
                     alkeen_molecular_formula = CompoundInfo.molecular_formula
-                    print(compound_id)
-                    print("######")
-                    print(smarts)
+                    print("Compound ID: " +str(compound_id))
+                    print("SMARTS: " + str(smarts))
+                    print("Structure: " + structurealkeen)
+                    print("##")
                     alkenenFormula.append(structurealkeen)
                     alkenenStructure.append( MoleculeVisualizeViaSmarts(smarts))
                     alkenenNames.append(alkeen_name)
                     alkenenBrutos.append(alkeen_molecular_formula)
-                bonds = carbon - 1    ## we do carbon - 1 because the amount of bonding places is equal to that.... for example if we have 5 carbon atoms we only have 4 bonding places C=C=C=C
-                counter = 0           ## to count the amount of times we need to add a double bond
-                for x in range(bonds - 2): ## we do - 2 because we have already started off with the first carbon atom as "C" and we iterate from 0
-                    structurealkeen = "C"
-                    counter += 1          ## adds 1 to the counter
-                    for y in range(carbon - 2): ## since we already have the first C atom
-                        if y <= counter:         ## if the counter is bigger or equal to Y we add a double bond
-                            structurealkeen += "=C"
-                        else: 
-                            structurealkeen += "-C"  ## else we add a single bond
-                        print(structurealkeen)
-                    smarts = StructureToSmarts(structurealkeen)        ###### converts from for ex C=C to [C;X2]=[C;X2]
-                    compound = pcp.get_compounds(smarts, "smiles")    ## SMARTS notation works when searching for SMILES... for some reason....
-                    start_index = str(compound).find('(') + 1        ## format the compound
-                    end_index = str(compound).find(')')                 ## format the compound
-                    compound_id = str(compound)[start_index:end_index]      ## format the compound
-                    CompoundInfo = pcp.Compound.from_cid(compound_id)       ## compound name
-                    alkeen_name = CompoundInfo.iupac_name
-                    alkeen_molecular_formula = CompoundInfo.molecular_formula
-                    print(compound_id)
-                    print("######")
-                    print(smarts)
-                    alkenenFormula.append(structurealkeen)
-                    alkenenStructure.append(IdToPhotoViaWebsite(compound_id))       ## better to not draw these ones, as they are more complicated...
-                    alkenenNames.append(alkeen_name)
-                    alkenenBrutos.append(alkeen_molecular_formula) 
+
+                
             else:
-                print("No Alkenen for this bruto")
+                print("####################################### ALKEEN #######################################")
+                print("Compound ID: None")
+                print("SMARTS: None")
+                print("Structure: None")
+                print("##")
                 alkenenFormula = []
                 alkenenStructure = []      
                 alkenenNames = []
                 alkenenBrutos = []
             
-            if hydrogen == ((carbon * 2)-2):
+            if hydrogen == ((carbon * 2)-2):      ## alyn # triple bond
                 bonds = carbon/2
                 try:
                     bonds = int(bonds)
@@ -338,6 +326,7 @@ def CandHinator(carbon,hydrogen,oxygen):         ### ONLY ONE DOUBLE OR TRIPLE B
                 alkynenStructure = []
                 alkynenNames = []
                 alkynenBrutos = []
+                print("####################################### ALKYN #######################################")
                 for x in range(bonds):
                     structurealkyn = ""
                     for y in range(carbon - 1):
@@ -355,9 +344,10 @@ def CandHinator(carbon,hydrogen,oxygen):         ### ONLY ONE DOUBLE OR TRIPLE B
                     CompoundInfo = pcp.Compound.from_cid(compound_id)       ## compound name
                     alkyn_name = CompoundInfo.iupac_name
                     alkyn_molecular_formula = CompoundInfo.molecular_formula
-                    print(compound_id)
-                    print("######")
-                    print(smarts)
+                    print("Compound ID: " +str(compound_id))
+                    print("SMARTS: " + str(smarts))
+                    print("Structure: " + structurealkyn)
+                    print("##")
                     alkynenFormula.append(structurealkyn)
                     alkynenStructure.append(IdToPhotoViaWebsite(compound_id))
                     alkynenNames.append(alkyn_name)
@@ -389,37 +379,286 @@ def CandHinator(carbon,hydrogen,oxygen):         ### ONLY ONE DOUBLE OR TRIPLE B
                 #     alkynenNames.append(alkyn_name)
                 #     alkynenBrutos.append(alkyn_molecular_formula)
             else:
-                print("No Alkynen for this bruto")
+                print("####################################### ALKYN #######################################")
+                print("Compound ID: None")
+                print("SMARTS: None")
+                print("Structure: None")
                 alkynenFormula = []
                 alkynenStructure = []      
                 alkynenNames = []
                 alkynenBrutos = []
             return(strucutrealkaan, alkaaanvisual,alkaanname, alkaanbruto ,          alkenenFormula,alkenenStructure, alkenenNames, alkenenBrutos, alkynenFormula,alkynenStructure, alkynenNames, alkynenBrutos)   ##string, photo, list[strings], list[photos]      ### Structure (C-C), PHOTO , NAME, Structure(C=C). PHOTO, NAME   
         elif oxygen > 0:
-            print("e")
+            if hydrogen == ((carbon * 2)+2):       ## alkaan
+                alcoholvisuals = []
+                alcoholStructure = []
+                alcoholNames = []
+                alcoholBrutos = []
+
+
+                alcohollist = []                  ## define all our variables
+                alcohol = ""            ## define all our variables
+                aalcoholvisual = ""              ## define all our variables
+                alcoholname = ""                 ## define all our variables
+                alcoholbruto = ""                ## define all our variables
+                bonds = carbon/2          ## we are not checking bonding places but rather amount of Carbon atoms without being recursive, C-C-C is 2 because 1 and 2 and C-C-C-C-C is 3 because 4 is 2 and 5 is 1
+                try:
+                    bonds = int(bonds)
+                except:
+                    bonds = bonds + 0.5
+                    bonds = int(bonds)
+                for x in range(carbon):         
+                    # if x == 0:
+                    #     structure.append("CH3")
+                    # elif x == (carbon-1):            ## all this blurred out stuff was if if there were H atoms, but i figured out that that didnt work.
+                    #     structure.append("CH3")
+                    # else:
+                    alcohollist.append("C")              ## adds all our C atoms                                        
+                counter = 0  ## use to maninulate name, for example 1-butanol --> 2-butanol
+                for x in range(bonds):
+                
+                    counter += 1
+                    #alcohollist[len(alcohollist) - (x+1)] = "O"
+                    # if x != 0:
+                    #     alcohollist[len(alcohollist) - x] = "C"
+                    for y in range(len(alcohollist)):
+                        alcohol += alcohollist[x]
+                    alcohol += "O"
+                    #smarts = StructureToSmarts(alcohol)         ## converts from C-C-C --> [#6]-[#6]-
+                    
+                    if x == 0:      ## if this is the first time running the loop, meaning the normal like C-C-OH then the smiles SHOULD work and return the name, for ex 1-butanol
+
+                        compound = pcp.get_compounds(alcohol, "smiles")    ## SMARTS notation works when searching for SMILES... for some reason....
+                        
+                    else:                         ### if its not the first loop the SMARTS notation does not work for some odd reason and returns something wonky, so the next 3 lines of code replace the 1-butanol --> 2-butanol and the counter counts the amounts of loops to make sure the right number is added
+                        alcoholname = alcoholname.replace(str(x), str(counter))
+                        compound = pcp.get_compounds(alcoholname, "name")       ## searches the compound by using the name made ^
+                    start_index = str(compound).find('(') + 1        ## format the compound
+                    end_index = str(compound).find(')')                 ## format the compound
+                    compound_id = str(compound)[start_index:end_index]      ## format the compound
+                    alcoholname = pcp.Compound.from_cid(compound_id).iupac_name       ## compound name
+                    alcoholbruto = pcp.Compound.from_cid(compound_id).molecular_formula
+                    
+                    alcoholvisual = IdToPhotoViaWebsite(compound_id)   ## gets photo
+                    alcoholStructure.append("none at the moment")      ## gets structure
+                    alcoholvisuals.append(alcoholvisual)               ## adds the photo
+                    alcoholNames.append(alcoholname)                   ## adds the name
+                    alcoholBrutos.append(alcoholbruto)                 ## adds the bruto formula
+
+                    alcohol = ""                                       ## resets the alcohol structure to nothing, no point since it will always be set back to C*XO (meaning O will always be at the end) CCO or CCCCCO etc
+                return(alcoholStructure,alcoholvisuals,alcoholNames,alcoholBrutos)
+            else:
+                print("No Alcoholen for this bruto")
+                alcoholStructure = "None"
+                alcoholvisuals = ""
+                alcoholNames = ""
+                alcoholBrutos = ""
+                return(alcoholStructure,alcoholvisuals,alcoholNames,alcoholBrutos)
+            
     else:
         return("None")
-def CandHguesser(carbon):                        ### ONLY ONE DOUBLE OR TRIPLE BOND!!!
-    HydrogenAlkanen = ((carbon * 2)+2)        ## calculates hydrogen atoms needed to form an alkaan
-    HydrogenAlkenen = carbon * 2                ## calculates hydrogen atoms needed to form an alkeen
-    HydrogenAlkynen = (carbon *2) -2             ## calculates hydrogen atoms needed to form an alkyn
-    CandHguesserls = CandHinator(carbon,HydrogenAlkanen, 0)        ## runs the Hydrogen atoms for an alkaan through the function and returns results
-    print("###########")
-    strucutrealkaan, alkaaanvisual,alkaanname, alkaanbruto = CandHguesserls[0],CandHguesserls[1],CandHguesserls[2],CandHguesserls[3] ## structure, photo, name   only grabs the first 4 items of the list since only those relate to alkanen
-    CandHguesserls = CandHinator(carbon,HydrogenAlkenen,0)      ##same as previous
-    alkenenFormula,alkenenStructure, alkenenNames,alkenenBrutos = CandHguesserls[4], CandHguesserls[5], CandHguesserls[6], CandHguesserls[7]   ## structure, photo, names     ##same as previous 
-    CandHguesserls = CandHinator(carbon,HydrogenAlkynen,0)         ##same as previous
-    alkynenFormula,alkynenStructure, alkynenNames, alkynenBrutos = CandHguesserls[8], CandHguesserls[9], CandHguesserls[10], CandHguesserls[11] ##same as previous
-    print(strucutrealkaan,alkaanname,alkaanbruto )   ##check
-    print(alkenenFormula, alkenenNames, alkenenBrutos) ## check
-    return(strucutrealkaan, alkaaanvisual,alkaanname, alkaanbruto,               alkenenFormula,alkenenStructure, alkenenNames,alkenenBrutos     ,         alkynenFormula,alkynenStructure, alkynenNames, alkynenBrutos  ) ### Structure (C-C), PHOTO , NAME, Structure(C=C). PHOTO, NAME
+
+    
+
+
+
 def StructureToSmarts(structure_formula):        ## smiles is for ex: C=C, C-C-C=C  ## SMARTS is for ex [#6]
+
     mol = Chem.MolFromSmiles(structure_formula) 
 
     # Convert the molecule to SMARTS
     smarts_pattern = Chem.MolToSmarts(mol)         ## Smarts is [C;X2]=[C;X2] for C=C
 
     return(smarts_pattern)  # This should print '[C;X2]=[C;X2]' just kidding, for C=C we get [#6]=[#6]
+def carboninator(carbon):         ## GENERATES all possible C chains with only H 
+    # print("test")          ### single bond C-C     Double bond C=C   triple bond C#C
+    if carbon > 0 :
+        
+        ##### alkanen alkenen en alkynen
+        ## alkaan
+        
+        structure = []                 ## define all our variables
+        strucutrealkaan = ""            ## define all our variables
+        alkaaanvisual = ""              ## define all our variables
+        alkaanname = ""                 ## define all our variables
+        alkaanbruto = ""                ## define all our variables
+        print("##################### ALKAAN #################")
+        for x in range(carbon):         
+            # if x == 0:
+            #     structure.append("CH3")
+            # elif x == (carbon-1):            ## all this blurred out stuff was if if there were H atoms, but i figured out that that didnt work.
+            #     structure.append("CH3")
+            # else:
+            structure.append("C")              ## adds all our C atoms
+            strucutrealkaan = ""    
+            for x in range(len(structure)):
+                if x == 0:
+                    strucutrealkaan += structure[x]
+                else:
+                    strucutrealkaan +="-"                               ## builds our Alkaan, C-C-C
+                    strucutrealkaan += structure[x]
+        # print(strucutrealkaan)
+        # smarts = structural_to_smarts(strucutrealkaan)
+        # print(smarts)
+        # mol = Chem.MolFromSmarts(smarts)
+        # smiles = Chem.MolToSmiles(mol)
+        smarts = StructureToSmarts(strucutrealkaan)         ## converts from C-C-C --> [#6]-[#6]-
+        compound = pcp.get_compounds(smarts, "smiles")    ## SMARTS notation works when searching for SMILES... for some reason....
+        start_index = str(compound).find('(') + 1        ## format the compound
+        end_index = str(compound).find(')')                 ## format the compound
+        compound_id = str(compound)[start_index:end_index]      ## format the compound
+        alkaanname = pcp.Compound.from_cid(compound_id).iupac_name       ## compound name
+        alkaanbruto = pcp.Compound.from_cid(compound_id).molecular_formula
+        print("Compound ID: " +str(compound_id))
+        print("SMARTS: " + str(smarts))
+        print("Structure: " + strucutrealkaan)
+        print("##")
+        alkaaanvisual = MoleculeVisualizeViaSmarts(smarts)
+
+        ##################### ALKEEN #################
+        if carbon > 1:
+            bonds = carbon/2
+            try:
+                bonds = int(bonds)
+            except:
+                bonds = bonds + 0.5
+                bonds = int(bonds)
+            # print(bonds)
+            alkenenFormula = []
+            alkenenStructure = []
+            alkenenNames = []
+            alkenenBrutos = []
+            print("##################### ALKEEN #################")
+            for x in range(bonds):
+                structurealkeen = ""
+                for y in range(carbon - 1):
+                    if y == 0:
+                        structurealkeen += "C"
+                    if y == x:
+                        structurealkeen += "=C"
+                    else:
+                        structurealkeen += "-C"
+
+                smarts = StructureToSmarts(structurealkeen)        ###### converts from for ex C=C to [C;X2]=[C;X2]
+                compound = pcp.get_compounds(smarts, "smiles")    ## SMARTS notation works when searching for SMILES... for some reason....
+                start_index = str(compound).find('(') + 1        ## format the compound
+                end_index = str(compound).find(')')                 ## format the compound
+                compound_id = str(compound)[start_index:end_index]      ## format the compound
+                CompoundInfo = pcp.Compound.from_cid(compound_id)       ## compound name
+                alkeen_name = CompoundInfo.iupac_name
+                alkeen_molecular_formula = CompoundInfo.molecular_formula
+                print("Compound ID: " +str(compound_id))
+                print("SMARTS: " + str(smarts))
+                print("Structure: " + structurealkeen)
+                print("##")
+                alkenenFormula.append(structurealkeen)
+                alkenenStructure.append( MoleculeVisualizeViaSmarts(smarts))
+                alkenenNames.append(alkeen_name)
+                alkenenBrutos.append(alkeen_molecular_formula)
+
+            ##### THIS DOES NOT GET CALLED WHEN THE HYDROGEN IS UNKNOWN, THIS ONLY GETS CALLED 
+            bonds = carbon - 1    ## we do carbon - 1 because the amount of bonding places is equal to that.... for example if we have 5 carbon atoms we only have 4 bonding places C=C=C=C
+            counter = 0           ## to count the amount of times we need to add a double bond
+            for x in range(bonds - 2): ## we do - 2 because we have already started off with the first carbon atom as "C" and we iterate from 0
+                structurealkeen = "C"
+                counter += 1          ## adds 1 to the counter
+                for y in range(carbon - 2): ## since we already have the first C atom
+                    if y <= counter:         ## if the counter is bigger or equal to Y we add a double bond
+                        structurealkeen += "=C"
+                    else: 
+                        structurealkeen += "-C"  ## else we add a single bond
+                smarts = StructureToSmarts(structurealkeen)        ###### converts from for ex C=C to [C;X2]=[C;X2]
+                try:
+                    compound = pcp.get_compounds(smarts, "smiles")    ## SMARTS notation works when searching for SMILES... for some reason....
+                    start_index = str(compound).find('(') + 1        ## format the compound
+                    end_index = str(compound).find(')')                 ## format the compound
+                    compound_id = str(compound)[start_index:end_index]      ## format the compound
+                    CompoundInfo = pcp.Compound.from_cid(compound_id)       ## compound name
+                    alkeen_name = CompoundInfo.iupac_name
+                    alkeen_molecular_formula = CompoundInfo.molecular_formula
+                    alkenenFormula.append(structurealkeen)
+                    alkenenStructure.append(IdToPhotoViaWebsite(compound_id))       ## better to not draw these ones, as they are more complicated...
+                    alkenenNames.append(alkeen_name)
+                    alkenenBrutos.append(alkeen_molecular_formula) 
+                    print("Compound ID: " +str(compound_id))
+                    print("SMARTS: " + str(smarts))
+                    print("Structure: " + structurealkeen)
+                    print("##")
+                except:
+                    print("Compound ID: None ")
+                    print("SMARTS: " + str(smarts))
+                    print("Structure: " + structurealkeen)
+                    print("##")
+                    alkenenFormula.append(structurealkeen)
+                    alkenenStructure.append(Image.open("NotExist.png"))       ## better to not draw these ones, as they are more complicated...
+                    alkenenNames.append("Does Not Exist")
+                    alkenenBrutos.append("Unknown") 
+        
+        ####################################### ALKYN #######################################
+        if carbon > 1:
+            bonds = carbon/2
+            try:
+                bonds = int(bonds)
+            except:
+                bonds = bonds + 0.5
+                bonds = int(bonds)
+            print(bonds)
+            alkynenFormula = []
+            alkynenStructure = []
+            alkynenNames = []
+            alkynenBrutos = []
+            print("####################################### ALKYN #######################################")
+            for x in range(bonds):
+                structurealkyn = ""
+                for y in range(carbon - 1):
+                    if y == 0:
+                        structurealkyn += "C"
+                    if y == x:
+                        structurealkyn += "#C"
+                    else:
+                        structurealkyn += "-C"
+                smarts = StructureToSmarts(structurealkyn)        ###### converts from for ex C=C to [C;X2]=[C;X2]
+                compound = pcp.get_compounds(smarts, "smiles")    ## SMARTS notation works when searching for SMILES... for some reason....
+                start_index = str(compound).find('(') + 1        ## format the compound
+                end_index = str(compound).find(')')                 ## format the compound
+                compound_id = str(compound)[start_index:end_index]      ## format the compound
+                CompoundInfo = pcp.Compound.from_cid(compound_id)       ## compound name
+                alkyn_name = CompoundInfo.iupac_name
+                alkyn_molecular_formula = CompoundInfo.molecular_formula
+                print("Compound ID: " +str(compound_id))
+                print("SMARTS: " + str(smarts))
+                print("Structure: " + structurealkyn)
+                print("##")
+                alkynenFormula.append(structurealkyn)
+                alkynenStructure.append(IdToPhotoViaWebsite(compound_id))
+                alkynenNames.append(alkyn_name)
+                alkynenBrutos.append(alkyn_molecular_formula)
+    return(strucutrealkaan, alkaaanvisual,alkaanname, alkaanbruto ,          alkenenFormula,alkenenStructure, alkenenNames, alkenenBrutos, alkynenFormula,alkynenStructure, alkynenNames, alkynenBrutos)   ##string, photo, list[strings], list[photos]      ### Structure (C-C), PHOTO , NAME, Structure(C=C). PHOTO, NAME
+
+
+
+#def CandHguesser(carbon):                        ### ONLY ONE DOUBLE OR TRIPLE BOND!!!   --> not needed anymore.
+    ## old way of doing it
+    
+    
+    # HydrogenAlkanen = ((carbon * 2)+2)        ## calculates hydrogen atoms needed to form an alkaan
+    # HydrogenAlkenen = carbon * 2                ## calculates hydrogen atoms needed to form an alkeen            
+    # HydrogenAlkynen = (carbon *2) -2             ## calculates hydrogen atoms needed to form an alkyn
+    # CandHguesserls = carboninator(carbon)        ## runs the Hydrogen atoms for an alkaan through the function and returns results
+    # print("###########")
+    # strucutrealkaan, alkaaanvisual,alkaanname, alkaanbruto = CandHguesserls[0],CandHguesserls[1],CandHguesserls[2],CandHguesserls[3] ## structure, photo, name   only grabs the first 4 items of the list since only those relate to alkanen
+    # CandHguesserls = carboninator(carbon,HydrogenAlkenen,0, True)      ##same as previous
+    # alkenenFormula,alkenenStructure, alkenenNames,alkenenBrutos = CandHguesserls[4], CandHguesserls[5], CandHguesserls[6], CandHguesserls[7]   ## structure, photo, names     ##same as previous 
+    # CandHguesserls = carboninator(carbon,HydrogenAlkynen,0 , True)         ##same as previous
+    # alkynenFormula,alkynenStructure, alkynenNames, alkynenBrutos = CandHguesserls[8], CandHguesserls[9], CandHguesserls[10], CandHguesserls[11] ##same as previous
+    # print(strucutrealkaan,alkaanname,alkaanbruto )   ##check
+    # print(alkenenFormula, alkenenNames, alkenenBrutos) ## check
+    #return(strucutrealkaan, alkaaanvisual,alkaanname, alkaanbruto,               alkenenFormula,alkenenStructure, alkenenNames,alkenenBrutos     ,         alkynenFormula,alkynenStructure, alkynenNames, alkynenBrutos  ) ### Structure (C-C), PHOTO , NAME, Structure(C=C). PHOTO, NAME
+
+
+
+
+
 
 #CandHguesser(6)
 #CandHinator(2,2,0)
