@@ -8,13 +8,14 @@ import requests
 from bs4 import BeautifulSoup
 from PIL import Image
 from io import BytesIO
+import re
 def MoleculeStable(element1,element2):
     groupI = {"H": [1, 2.1], "Li": [1, 1.0], "Na":[1,0.9], "K":[1,0.8],"Rb":[1,0.8],"Cs":[1,0.7],"Fr":[1,0.7]}        ## element name, all possible positive oxidiation numbers, and then final number is the EN worth
     groupII = {"Be": [2, 1.5], "Mg": [2, 1.2], "Ca":[2,1.0],"Sr":[2,1.0],"Ba":[2,0.9],"Ra":[2,0.9]}
     groupIII = {"B": [3, 2.0], "Al":[3,1.5],"Ga":[3,1.6],"In":[3,1.7],"Ti":[3,1.8]}
     groupIV = {"C": [2,4, 2.5],"Si": [4, 1.8],"Ge": [4, 1.8], "Sn": [2,4, 1.8], "Pb": [2,4, 1.8]}
     groupV = {"N": [1,3,5, 3.0],"P": [3,5, 2.1], "As": [5, 2.0], "Sb": [4, 1.9], "Bi": [4, 1.8]}
-    groupVI = {"O": [6, 3.5],"S": [2,4,6, 2.5],"Se": [4,6, 2.4],"Te": [6, 2.1],"Po": [6, 2.0]}  ## quick bit of thinking i should think of. So we know that S en F leads to SF2 and SF6 because we have the structure of -        which is 6 total electrons on the shell, 4 valence ones. In SF2 F bonds with the free electrons but since it has 7 electrons they each share 1 electron, causing the need for 2 F atoms to be present.                                                     *
+    groupVI = {"O": [1,6, 3.5],"S": [2,4,6, 2.5],"Se": [4,6, 2.4],"Te": [6, 2.1],"Po": [6, 2.0]}  ## quick bit of thinking i should think of. So we know that S en F leads to SF2 and SF6 because we have the structure of -        which is 6 total electrons on the shell, 4 valence ones. In SF2 F bonds with the free electrons but since it has 7 electrons they each share 1 electron, causing the need for 2 F atoms to be present.                                                     *
     groupVII = {"F": [7, 4.0], "Cl": [1,3,5,7, 3.0], "Br": [1,3,5,7, 2.8],"I": [1,3,5,7, 2.5],"At": [7, 2.2]}                                                                                    #                     *    *     However with SF6 the 2 valence pairs break, allowing the 6 electrons to bond with 6 Fluor electrons, so the question I want to ask in a week is, can we predict this for all elements? And why could we not keep 1 pair and get SF4, we would then have  *   *    -->> but in SF6 S would then have 12 valence electrons, not 6... HOW???
     groups =  [groupI,groupII,groupIII,groupIV,groupV,groupVI, groupVII]                                                                                                                         #                       -                                                                                                                                                                                                                                                                   -        ## how can C have -2??? 2 pictures trying to figure that out on my desktop
     # element1 = "Na"
@@ -388,7 +389,7 @@ def CandHinator(carbon,hydrogen,oxygen):         ### ONLY ONE DOUBLE OR TRIPLE B
                 alkynenNames = []
                 alkynenBrutos = []
             return(strucutrealkaan, alkaaanvisual,alkaanname, alkaanbruto ,          alkenenFormula,alkenenStructure, alkenenNames, alkenenBrutos, alkynenFormula,alkynenStructure, alkynenNames, alkynenBrutos)   ##string, photo, list[strings], list[photos]      ### Structure (C-C), PHOTO , NAME, Structure(C=C). PHOTO, NAME   
-        elif oxygen > 0:
+        elif oxygen > 0:        ## OH and COOH
             if hydrogen == ((carbon * 2)+2):       ## alkaan
                 alcoholvisuals = []
                 alcoholStructure = []
@@ -634,9 +635,107 @@ def carboninator(carbon):         ## GENERATES all possible C chains with only H
                 alkynenNames.append(alkyn_name)
                 alkynenBrutos.append(alkyn_molecular_formula)
     return(strucutrealkaan, alkaaanvisual,alkaanname, alkaanbruto ,          alkenenFormula,alkenenStructure, alkenenNames, alkenenBrutos, alkynenFormula,alkynenStructure, alkynenNames, alkynenBrutos)   ##string, photo, list[strings], list[photos]      ### Structure (C-C), PHOTO , NAME, Structure(C=C). PHOTO, NAME
+def balancer(formula):
+    print("working on it")
+    formula = "Na + (OH)2 --> NaOH + H2"
+    seperated = formula.split("-->") ## splits list into 2 items, 0 --> 1 ( before and after the paranthesis)
+    reactants = []
+    products = []
+    for x in range(len(seperated[0].split("+"))):       ## for amount of items before -->, 1 is after and 0 is before since seperated splits into before and after the arrow
+        reactants.append(seperated[0].split("+")[x].replace(" ", ""))     ## for the items before -->, append them into a reactant list and remove spaces
+    for x in range(len(seperated[1].split("+"))):       ## for amount of items before -->
+        products.append(seperated[1].split("+")[x].replace(" ", "")) ## for the items after -->, append them into a reactant list and remove spaces
+    
+    for x in range(len(reactants)):                     ## for the reactants
+        if "(" in seperated[x]:
+            print(atomsniffer(parentheseshandler(seperated[x])))
 
 
 
+
+
+    #split1 = formula.split("-->")[0].split("+")
+    # elements = []
+    # for x in range(len(split1)):
+    
+    #     for y in range(20):
+    #         splitted = split1[x].split(str(y))
+    #         if len(splitted) != 1:
+    #             splitted[x-1] += str(y)
+    #             elements.append(splitted[x-1])
+                
+
+    #         elif y == 19:
+    #             print(splitted)
+    #             elements.append(splitted[x-1])
+        
+    # print(elements)
+    # Use regular expression to match elements, counts, and parentheses
+    
+
+    
+def parentheseshandler(formula): ### caution, this changes the order of the atoms, this is to be used only to do calculations revolving calulations :)
+    elements = {}
+    stack = []
+    stack = formula.split("(")
+    for x in range(len(formula.split("("))):
+        element = formula.split("(")[x].split(")")[0]
+        if x > 0:
+            amount = re.sub(r'([A-Za-z])', '', formula.split("(")[x].split(")")[1])
+            if amount == "":
+                amount = "1"
+            elements[str(element)] = amount
+            print(elements)
+        print(stack)
+    for x in range(len(stack)):
+        print("oba joba  " + str(stack[x]))
+        if ")" in stack[x]:
+            key = list(elements)[0]                  ## gets us the key, so for example OH
+            atomlist = re.findall(r'[A-Z][a-z]*', key)        ## finds all atoms of the key, so for OH we get O and H
+            print(atomlist)  
+            burnerlist = []                    ## create list
+            for y in range(len(atomlist)):           ## for amount in atom list
+                burnerlist.append(atomlist[y] + elements[key])      ## add numbers, so for ex O2H2
+            added_str = ""                                          ## reset string
+            for z in range(len(burnerlist)):                        ## for amount of items in burnerlist, so "O2" , "H2"
+                added_str +=  burnerlist[z]                         ## we join them to get "O2H2"
+
+            rest_of_atoms = stack[x].split(")")
+            rest_of_atoms = rest_of_atoms[1].replace(elements[key], '', 1)    ## finds left over atoms still sticking together and splits em
+    
+            stack.append(rest_of_atoms) ## we can just add now, since the order doesnt matter
+
+            stack[x] =  added_str
+            
+            del elements[key]
+    new_formula = ""
+    for x in range(len(stack)):
+        new_formula += stack[x]
+    print(new_formula)
+    return(new_formula)
+
+def atomsniffer(formula):
+    elements = {}
+    stack = []
+    matches = re.findall(r'([A-Z][a-z]*)(\d*|\(\d*\))', formula) ## dict
+    print(matches)
+    # Create a dictionary to store elements and their counts
+   
+
+    for element, count in matches:
+            count = int(count) if count else 1
+            elements[element] = elements.get(element, 0) + count
+
+            # Check if there are elements inside parentheses
+            while stack and isinstance(stack[-1], dict):
+                inner_element, inner_count = stack.pop().popitem()
+                elements[inner_element] = elements.get(inner_element, 0) + inner_count
+
+    # Format the result as "element:count"
+    result = [f"{element}{count}" for element, count in elements.items()]
+    print(result)
+    return(result)
+balancer("as")
 #def CandHguesser(carbon):                        ### ONLY ONE DOUBLE OR TRIPLE BOND!!!   --> not needed anymore.
     ## old way of doing it
     
