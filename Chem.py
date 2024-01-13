@@ -637,7 +637,7 @@ def carboninator(carbon):         ## GENERATES all possible C chains with only H
     return(strucutrealkaan, alkaaanvisual,alkaanname, alkaanbruto ,          alkenenFormula,alkenenStructure, alkenenNames, alkenenBrutos, alkynenFormula,alkynenStructure, alkynenNames, alkynenBrutos)   ##string, photo, list[strings], list[photos]      ### Structure (C-C), PHOTO , NAME, Structure(C=C). PHOTO, NAME
 def balancer(formula):
     print("working on it")
-    formula = "Na + (OH)2 --> NaOH + H2"
+    formula = "Na + (OH)2 +  --> NaOH + H2"
     seperated = formula.split("-->") ## splits list into 2 items, 0 --> 1 ( before and after the paranthesis)
     reactants = []
     products = []
@@ -647,9 +647,18 @@ def balancer(formula):
         products.append(seperated[1].split("+")[x].replace(" ", "")) ## for the items after -->, append them into a reactant list and remove spaces
     
     for x in range(len(reactants)):                     ## for the reactants
-        if "(" in seperated[x]:
-            print(atomsniffer(parentheseshandler(seperated[x])))
-
+        if "(" in reactants[x]:
+            reactants[x] = (atomsniffer(parentheseshandler(reactants[x])))
+        else:
+            reactants[x] = (atomsniffer(reactants[x]))
+    print("Reactants: ", reactants)
+    for x in range(len(products)):                     ## for the reactants
+        if "(" in products[x]:
+            products[x] = (atomsniffer(parentheseshandler(products[x])))
+        else:
+            products[x] = (atomsniffer(products[x]))
+    print("Products: ", products)
+    
 
 
 
@@ -734,6 +743,7 @@ def atomsniffer(formula):
     # Format the result as "element:count"
     result = [f"{element}{count}" for element, count in elements.items()]
     print(result)
+    
     return(result)
 balancer("as")
 #def CandHguesser(carbon):                        ### ONLY ONE DOUBLE OR TRIPLE BOND!!!   --> not needed anymore.
