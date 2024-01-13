@@ -649,13 +649,27 @@ def balancer(formula, max_value):
         products.append(seperated[1].split("+")[x].replace(" ", "")) ## for the items after -->, append them into a reactant list and remove spaces
     
     for x in range(len(reactants)):                     ## for the reactants
-        if "(" in reactants[x]:
+        if "." in reactants[x] and "(" in reactants[x]:
+            reactants[x] = (hydrateHandler(reactants[x]))                   ## check for hydrates since it is less intensive and less chance of messing something up than with the paranthesis
             reactants[x] = (atomsniffer(parentheseshandler(reactants[x])))
+            print("both")
+        elif "." in reactants[x]:               
+            reactants[x] = (atomsniffer(hydrateHandler(reactants[x])))
+            print("hydrate")
+        elif "(" in reactants[x]:
+            reactants[x] = (atomsniffer(parentheseshandler(reactants[x])))
+            print("OH group")
         else:
+            print("normal")
             reactants[x] = (atomsniffer(reactants[x]))
     print("Reactants: ", reactants)
     for x in range(len(products)):                     ## for the reactants
-        if "(" in products[x]:
+        if "." in products[x] and "(" in products[x]:
+            products[x] = (hydrateHandler(products[x]))                   ## check for hydrates since it is less intensive and less chance of messing something up than with the paranthesis
+            products[x] = (atomsniffer(parentheseshandler(products[x])))
+        elif "." in products[x]:
+            products[x] = (atomsniffer(hydrateHandler(products[x])))
+        elif "(" in products[x]:
             products[x] = (atomsniffer(parentheseshandler(products[x])))
         else:
             products[x] = (atomsniffer(products[x]))
@@ -718,7 +732,7 @@ def balancer(formula, max_value):
     for x in range(len(all_atoms_products)):                    ## checks if the current atom of the products list is in the reactants list  --> law of conservation of atoms
         if all_atoms_products[x] not in all_atoms_reactants:     
             return("The law of conservation of atoms does not seem to be broken here, please ensure that all the atoms in your reactants are also in your products!")
-    TotalAtoms = all_atoms_reactants          ## since the law of conservation of atoms is true at this stage, the used atoms is equal to the ones used in reactants or product
+    TotalAtoms = list(dict.fromkeys(all_atoms_reactants))          ## since the law of conservation of atoms is true at this stage, the used atoms is equal to the ones used in reactants or product
     print(total_molecules)  
     print(multipliers)
     numbers_range = range(1, max_value)    ## the maximum amount we can go to for balancing the equation, so a maximum of a certain amount of molecules
@@ -744,18 +758,30 @@ def balancer(formula, max_value):
                 except:
                     pass
                 current_molecule += 1
-            for c in range(len(reactants_list_of_dicts)):     ## for the amount of molecules we have
+            for c in range(len(products_list_of_dicts)):     ## for the amount of molecules we have
                 try:
-                    product_amount += products_list_of_dicts [c][current_atom] * all_combinations[x][current_molecule]      ## reactants_list_of_dicts[c] is the current dictionary, and [current_atom] is the atom we are looking for, so this returns the value, then we multiply it by its corrective multiplier
+                    product_amount += products_list_of_dicts[c][current_atom] * all_combinations[x][current_molecule]      ## reactants_list_of_dicts[c] is the current dictionary, and [current_atom] is the atom we are looking for, so this returns the value, then we multiply it by its corrective multiplier
                 except:
                     pass
                 current_molecule += 1
+            # if x == 6571:
+            #     print("total atoms: ", str(TotalAtoms))
+            #     print("total molecules react: ", str(reactants_list_of_dicts))
+            #     print("total molecules prod: ", str(reactants_list_of_dicts))
+            #     print(all_combinations[x])
+            #     print(TotalAtoms[y])
+            #     print(reactants_amount)
+            #     print(product_amount)
             if reactants_amount == product_amount:        ## the rest is a list to check when we are correct, we append a True value to the list and if not a False, we use this to keep track if ALL atoms are equal, not just if one is
                 check_list.append(True)
-                # print(all_combinations[x])
-                # print(TotalAtoms[y])
-                # print(reactants_amount)
-                # print(product_amount)
+                print("total atoms: ", str(TotalAtoms))
+                print("total molecules react: ", str(reactants_list_of_dicts))
+                print("total molecules prod: ", str(reactants_list_of_dicts))
+                print(all_combinations[x])
+                print(TotalAtoms[y])
+                print(reactants_amount)
+                print(product_amount)
+                
             else:
                 check_list.append(False)
         if False not in check_list:
@@ -884,7 +910,23 @@ def parentheseshandler(formula): ### caution, this changes the order of the atom
         new_formula += stack[x]
     print(new_formula)
     return(new_formula)
-
+def hydrateHandler(formula):
+    formula = formula
+    hydrate = formula.split(".")[1]
+    rest_of_formula = formula.split(".")[0]
+    hydrate_amount = re.findall(r'(\d+|\D+)', hydrate)[0]
+    hydrate_atoms = re.findall(r'([A-Z][a-z]*)(\d*|\(\d*\))', hydrate)     ### for ex for .2H2O it is [("H", "2"), ("O", "")]
+    new_molecue = rest_of_formula
+    for x in range(len(hydrate_atoms)):
+        if hydrate_atoms[x][1] == "":
+            new_molecue += hydrate_atoms[x][0]+str(1 * hydrate_amount)  
+        else: 
+            new_molecue += hydrate_atoms[x][0]+str(int(hydrate_atoms[x][1]) * int(hydrate_amount)) 
+            print(new_molecue)  
+    print(hydrate_amount)
+    print(hydrate_atoms) 
+    print(new_molecue)
+    return(new_molecue)  
 def atomsniffer(formula):
     elements = {}
     stack = []
