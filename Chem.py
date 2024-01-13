@@ -636,14 +636,15 @@ def carboninator(carbon):         ## GENERATES all possible C chains with only H
                 alkynenNames.append(alkyn_name)
                 alkynenBrutos.append(alkyn_molecular_formula)
     return(strucutrealkaan, alkaaanvisual,alkaanname, alkaanbruto ,          alkenenFormula,alkenenStructure, alkenenNames, alkenenBrutos, alkynenFormula,alkynenStructure, alkynenNames, alkynenBrutos)   ##string, photo, list[strings], list[photos]      ### Structure (C-C), PHOTO , NAME, Structure(C=C). PHOTO, NAME
-def balancer(formula):
+def balancer(formula, max_value):
+    formula = formula#"Na + H2O --> NaOH + H2"
     print("working on it")
-    formula = "L + H2O +  --> LOH + H2 "
-    seperated = formula.split("-->") ## splits list into 2 items, 0 --> 1 ( before and after the paranthesis)
+    #formula = "L + H2O +  --> LOH + H2 "
+    seperated = formula.split("-->") ## splits list into 2 items, ["Na + H2O"] ["NaOH"] ( before and after the paranthesis)
     reactants = []
     products = []
-    for x in range(len(seperated[0].split("+"))):       ## for amount of items before -->, 1 is after and 0 is before since seperated splits into before and after the arrow
-        reactants.append(seperated[0].split("+")[x].replace(" ", ""))     ## for the items before -->, append them into a reactant list and remove spaces
+    for x in range(len(seperated[0].split("+"))):       ## for amount of items before the -->, 1 is after and 0 is before since seperated splits into before and after the arrow
+        reactants.append(seperated[0].split("+")[x].replace(" ", ""))     ## for the items before the -->, append them into a reactant list and remove spaces
     for x in range(len(seperated[1].split("+"))):       ## for amount of items before -->
         products.append(seperated[1].split("+")[x].replace(" ", "")) ## for the items after -->, append them into a reactant list and remove spaces
     
@@ -659,7 +660,7 @@ def balancer(formula):
         else:
             products[x] = (atomsniffer(products[x]))
     print("Products: ", products)           ## looks like this [   [list of atoms in molecule 1]  , [list of atoms in molecule 2]  ]
-        
+
 
 
 
@@ -698,29 +699,29 @@ def balancer(formula):
     all_atoms_products = []
     
     total_molecules = len(reactants_list_of_dicts) + len(products_list_of_dicts)             ## this shows the TOTAL amount of molecules in a the equation
-    multipliers = []
-    for x in range(total_molecules):
+    multipliers = []    ## this will be the total multipliers but gets a value later on
+    for x in range(total_molecules):             ## this adds 1 in the multiplier list for every molecule, so if we have 3 molecules it would be [1,1,1]
         multipliers.append(1)
     for x in range(len(reactants_list_of_dicts)):                 ## grabs all keys in the dictionarys in the list to see all atoms useds
-        for dictKey in reactants_list_of_dicts[x].keys():                                       
-            all_atoms_reactants.append(dictKey)
+        for dictKey in reactants_list_of_dicts[x].keys():         ## this adds all the atoms used in the reactants into a list                              
+            all_atoms_reactants.append(dictKey) 
     print(all_atoms_reactants)
 
     for x in range(len(products_list_of_dicts)):                  ## grabs all keys in the dictionarys in the list to see all atoms useds
-        for dictKey in products_list_of_dicts[x].keys():                                       
+        for dictKey in products_list_of_dicts[x].keys():          ## this adds all the atoms used in the products into a list                                   
             all_atoms_products.append(dictKey)
     print(all_atoms_products)
     for x in range(len(all_atoms_reactants)):                   ## checks if the current atom of the reactants list is in the products list    --> law of conservation of atoms
-        if all_atoms_reactants[x] not in all_atoms_products:
+        if all_atoms_reactants[x] not in all_atoms_products:   
             print("error")
-            return("error")
-    for x in range(len(all_atoms_products)):
-        if all_atoms_products[x] not in all_atoms_reactants:     ## checks if the current atom of the products list is in the reactants list  --> law of conservation of atoms
-            return("error")
-    TotalAtoms = all_atoms_reactants
+            return("The law of conservation of atoms does not seem to be broken here, please ensure that all the atoms in your reactants are also in your products!")
+    for x in range(len(all_atoms_products)):                    ## checks if the current atom of the products list is in the reactants list  --> law of conservation of atoms
+        if all_atoms_products[x] not in all_atoms_reactants:     
+            return("The law of conservation of atoms does not seem to be broken here, please ensure that all the atoms in your reactants are also in your products!")
+    TotalAtoms = all_atoms_reactants          ## since the law of conservation of atoms is true at this stage, the used atoms is equal to the ones used in reactants or product
     print(total_molecules)  
     print(multipliers)
-    numbers_range = range(1, 10)
+    numbers_range = range(1, max_value)    ## the maximum amount we can go to for balancing the equation, so a maximum of a certain amount of molecules
     correct = True
 # Generate all possible combinations
     all_combinations = list(product(numbers_range, repeat=len(multipliers)))
@@ -745,11 +746,11 @@ def balancer(formula):
                 current_molecule += 1
             for c in range(len(reactants_list_of_dicts)):     ## for the amount of molecules we have
                 try:
-                    product_amount += products_list_of_dicts [c][current_atom] * all_combinations[x][current_molecule]      ## reactants_list_of_dicts[z] is the current dictionary, and [current_atom] is the atom we are looking for, so this returns the value, then we multiply it by its corrective multiplier
+                    product_amount += products_list_of_dicts [c][current_atom] * all_combinations[x][current_molecule]      ## reactants_list_of_dicts[c] is the current dictionary, and [current_atom] is the atom we are looking for, so this returns the value, then we multiply it by its corrective multiplier
                 except:
                     pass
                 current_molecule += 1
-            if reactants_amount == product_amount:
+            if reactants_amount == product_amount:        ## the rest is a list to check when we are correct, we append a True value to the list and if not a False, we use this to keep track if ALL atoms are equal, not just if one is
                 check_list.append(True)
                 # print(all_combinations[x])
                 # print(TotalAtoms[y])
@@ -759,7 +760,61 @@ def balancer(formula):
                 check_list.append(False)
         if False not in check_list:
             print(all_combinations[x])
+            solved_solution = all_combinations[x]
             break
+    if False in check_list:
+        print("Not possible")
+        return("It seems like this is not possible to balance, or you may need to increase the maximum molecule amount")
+        
+    ## reconstruct string
+        
+    
+    
+    seperated = formula.split("-->") ## rebuild the string!
+    reactants_for_string = seperated[0].split("+")
+    products_for_string = seperated[1].split("+")
+    completed_formula = ""
+    # for x in range(len(reactants_for_string)):
+    #     completed_formula += str(solved_solution[x]) + " "+ reactants_for_string[x].replace(" ", "")     ## this replaces all the spaces in the string if there are any so then every case is the same, so then we just add a space 
+    #     if x != len(reactants_for_string)-1:
+    #         completed_formula += " + "
+
+    # iterator = len(reactants)
+    # completed_formula += " --> "
+    # for x in range(len(products_for_string)):
+    #     completed_formula += str(solved_solution[x + iterator]) + " " + products_for_string[x].replace(" ", "")
+    #     if x != len(products_for_string)-1:
+    #         completed_formula += " + " 
+    # print(completed_formula)
+
+    
+    for x in range(len(reactants)):
+        ## build molecule, since the reactants list looks like [[atom_1_for_molecule_1, atom_1_for_molecule_1] [atom_1_for_molecule_2, atom_2_for_molecule_2]]
+        molecule = ""
+        for y in range(len(reactants[x])):
+            molecule += reactants[x][y]
+            print(molecule)
+        if solved_solution[x] == 1:         ## this is just so instead of 1 O2 it would just be O2
+            completed_formula += molecule.replace(" ", "").replace("1", "") ## replaces spaces, like said already, the 1 is replaced for example Na1 would just be Na
+        else:
+            completed_formula += str(solved_solution[x]) + " "+ molecule.replace(" ", "").replace("1", "")     ## this replaces all the spaces in the string if there are any so then every case is the same, so then we just add a space 
+        if x != len(reactants)-1:
+            completed_formula += " + "
+
+    iterator = len(reactants)
+    completed_formula += " --> "
+    for x in range(len(products)):
+        molecule = ""
+        for y in range(len(products[x])):
+            molecule += products[x][y]
+        if solved_solution[x + iterator] == 1:
+            completed_formula += molecule.replace(" ", "").replace("1", "")
+        else:
+            completed_formula += str(solved_solution[x + iterator]) + " " + molecule.replace(" ", "").replace("1", "")
+        if x != len(products)-1:
+            completed_formula += " + " 
+    print(completed_formula)
+    return(completed_formula)   
 
     
     
@@ -852,7 +907,7 @@ def atomsniffer(formula):
     print(result)
     
     return(result)
-balancer("as")
+
 #def CandHguesser(carbon):                        ### ONLY ONE DOUBLE OR TRIPLE BOND!!!   --> not needed anymore.
     ## old way of doing it
     

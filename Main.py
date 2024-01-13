@@ -267,7 +267,17 @@ elif (st.session_state.status == 5):
         # except:
         #     st.warning("operation failed!")
 elif (st.session_state.status == 6):      
-    st.write("work in progress")
+    st.write("Equation balancer!")
+    st.write("Please input an equation like this: Na + H2O --> NaOH + H2")
+    formula = st.text_input(label = "Input here!")
+    max_molecule_counter = st.text_input(label= "Maximum number of molecules the program will try to count to, for ex 9 would maximize at 9 OH, and 10 OH will not be calculated" , value= "10")
+    if (st.button("submit")):
+        try:
+            max_molecule_counter = int(max_molecule_counter)
+        except:
+            st.rerun()
+        solution = Chem.balancer(formula, int(max_molecule_counter))
+        st.write(solution)
 elif (st.session_state.status == 7):
     col1,col2,col3, col4,col5, col6 = st.columns([0.02,0.1,0.02,0.1,0.02,0.1])
     with col1:
