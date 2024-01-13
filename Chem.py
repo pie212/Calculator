@@ -640,17 +640,20 @@ def balancer(formula, max_value):
     formula = formula#"Na + H2O --> NaOH + H2"
     print("working on it")
     #formula = "L + H2O +  --> LOH + H2 "
-    seperated = formula.split("-->") ## splits list into 2 items, ["Na + H2O"] ["NaOH"] ( before and after the paranthesis)
-    reactants = []
-    products = []
-    for x in range(len(seperated[0].split("+"))):       ## for amount of items before the -->, 1 is after and 0 is before since seperated splits into before and after the arrow
-        reactants.append(seperated[0].split("+")[x].replace(" ", ""))     ## for the items before the -->, append them into a reactant list and remove spaces
-    for x in range(len(seperated[1].split("+"))):       ## for amount of items before -->
-        products.append(seperated[1].split("+")[x].replace(" ", "")) ## for the items after -->, append them into a reactant list and remove spaces
-    original_reactants = reactants[:]
-    original_products = products[:]
-    print(original_reactants)
-    print(original_products)
+    try:
+        seperated = formula.split("-->") ## splits list into 2 items, ["Na + H2O"] ["NaOH"] ( before and after the paranthesis)
+        reactants = []
+        products = []
+        for x in range(len(seperated[0].split("+"))):       ## for amount of items before the -->, 1 is after and 0 is before since seperated splits into before and after the arrow
+            reactants.append(seperated[0].split("+")[x].replace(" ", ""))     ## for the items before the -->, append them into a reactant list and remove spaces
+        for x in range(len(seperated[1].split("+"))):       ## for amount of items before -->
+            products.append(seperated[1].split("+")[x].replace(" ", "")) ## for the items after -->, append them into a reactant list and remove spaces
+        original_reactants = reactants[:]
+        original_products = products[:]
+        print(original_reactants)
+        print(original_products)
+    except:
+        return("error")
     try:
         for x in range(len(reactants)):                     ## for the reactants
             if "." in reactants[x] and "(" in reactants[x]:
