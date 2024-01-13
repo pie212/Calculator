@@ -637,7 +637,7 @@ def carboninator(carbon):         ## GENERATES all possible C chains with only H
     return(strucutrealkaan, alkaaanvisual,alkaanname, alkaanbruto ,          alkenenFormula,alkenenStructure, alkenenNames, alkenenBrutos, alkynenFormula,alkynenStructure, alkynenNames, alkynenBrutos)   ##string, photo, list[strings], list[photos]      ### Structure (C-C), PHOTO , NAME, Structure(C=C). PHOTO, NAME
 def balancer(formula):
     print("working on it")
-    formula = "Na + (OH)2 +  --> NaOH + H2"
+    formula = "NaL + (OH)2 +  --> NaOH + H2"
     seperated = formula.split("-->") ## splits list into 2 items, 0 --> 1 ( before and after the paranthesis)
     reactants = []
     products = []
@@ -657,12 +657,61 @@ def balancer(formula):
             products[x] = (atomsniffer(parentheseshandler(products[x])))
         else:
             products[x] = (atomsniffer(products[x]))
-    print("Products: ", products)
+    print("Products: ", products)           ## looks like this [   [list of atoms in molecule 1]  , [list of atoms in molecule 2]  ]
+
+
+
+
+
+    reactants_list_of_dicts = []  
+    for x in range(len(reactants)):    ## for amount of items in the whole products list, so molecule 1 and 2
+        add_to_dict = {}
+        for y in range(len(reactants[x])):        ## amount of items in that specific molecule, so all the atoms
+                add_to_dict.update(re.findall(r'([A-Z][a-z]*)(\d*|\(\d*\))', reactants[x][y]))          ## splits everything and adds to the dictionary each atom in the list, ["H1, Na1, O1"] iterates for every item and updates to the dict to get [{"H" : "1", "Na" : "1", "O", "1"}]
+        if add_to_dict:   ## if dict has items in it
+            reactants_list_of_dicts.append(add_to_dict)       ## add it to the list
+    for x in reactants_list_of_dicts:            ## this converts all values in the dict from str to int, so {"Na": "1"} --> {"Na", 1}
+        for key in x:
+            x[key] = int(x[key])
+    print("Reactants:")
+    print(reactants_list_of_dicts)
+
+
+    products_list_of_dicts = []  
+    for x in range(len(products)):    ## for amount of items in the whole products list, so molecule 1 and 2
+        add_to_dict = {}
+        for y in range(len(products[x])):        ## amount of items in that specific molecule, so all the atoms
+                add_to_dict.update(re.findall(r'([A-Z][a-z]*)(\d*|\(\d*\))', products[x][y]))
+        if add_to_dict:
+            products_list_of_dicts.append(add_to_dict)
+    for x in products_list_of_dicts:            ## this converts all values in the dict from str to int, so {"Na": "1"} --> {"Na", 1}
+        for key in x:
+            x[key] = int(x[key])
+    print("Products")
+    print(products_list_of_dicts)
+    ##### actual thinking logic now :(
+    ## base case with 1
+    multiplier = 1
+    used_atoms = []
+    all_atoms_reactants = []
+    all_atoms_products = []
     
+    for x in range(len(reactants_list_of_dicts)):                 ## grabs all keys in the dictionarys in the list to see all atoms useds
+        for dictKey in reactants_list_of_dicts[x].keys():                                       
+            all_atoms_reactants.append(dictKey)
+    print(all_atoms_reactants)
 
-
-
-
+    for x in range(len(products_list_of_dicts)):                  ## grabs all keys in the dictionarys in the list to see all atoms useds
+        for dictKey in products_list_of_dicts[x].keys():                                       
+            all_atoms_products.append(dictKey)
+    print(all_atoms_products)
+    for x in range(len(all_atoms_reactants)):                   ## checks if the current atom of the reactants list is in the products list    --> law of conservation of atoms
+        if all_atoms_reactants[x] not in all_atoms_products:
+            print("error")
+            return("error")
+    for x in range(len(all_atoms_products)):
+        if all_atoms_products[x] not in all_atoms_reactants:     ## checks if the current atom of the products list is in the reactants list  --> law of conservation of atoms
+            return("error")  
     #split1 = formula.split("-->")[0].split("+")
     # elements = []
     # for x in range(len(split1)):
