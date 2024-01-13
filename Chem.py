@@ -9,6 +9,7 @@ from bs4 import BeautifulSoup
 from PIL import Image
 from io import BytesIO
 import re
+from itertools import product
 def MoleculeStable(element1,element2):
     groupI = {"H": [1, 2.1], "Li": [1, 1.0], "Na":[1,0.9], "K":[1,0.8],"Rb":[1,0.8],"Cs":[1,0.7],"Fr":[1,0.7]}        ## element name, all possible positive oxidiation numbers, and then final number is the EN worth
     groupII = {"Be": [2, 1.5], "Mg": [2, 1.2], "Ca":[2,1.0],"Sr":[2,1.0],"Ba":[2,0.9],"Ra":[2,0.9]}
@@ -637,7 +638,7 @@ def carboninator(carbon):         ## GENERATES all possible C chains with only H
     return(strucutrealkaan, alkaaanvisual,alkaanname, alkaanbruto ,          alkenenFormula,alkenenStructure, alkenenNames, alkenenBrutos, alkynenFormula,alkynenStructure, alkynenNames, alkynenBrutos)   ##string, photo, list[strings], list[photos]      ### Structure (C-C), PHOTO , NAME, Structure(C=C). PHOTO, NAME
 def balancer(formula):
     print("working on it")
-    formula = "NaL + (OH)2 +  --> NaOH + H2"
+    formula = "L + H2O +  --> LOH + H2 "
     seperated = formula.split("-->") ## splits list into 2 items, 0 --> 1 ( before and after the paranthesis)
     reactants = []
     products = []
@@ -658,7 +659,7 @@ def balancer(formula):
         else:
             products[x] = (atomsniffer(products[x]))
     print("Products: ", products)           ## looks like this [   [list of atoms in molecule 1]  , [list of atoms in molecule 2]  ]
-
+        
 
 
 
@@ -696,6 +697,10 @@ def balancer(formula):
     all_atoms_reactants = []
     all_atoms_products = []
     
+    total_molecules = len(reactants_list_of_dicts) + len(products_list_of_dicts)             ## this shows the TOTAL amount of molecules in a the equation
+    multipliers = []
+    for x in range(total_molecules):
+        multipliers.append(1)
     for x in range(len(reactants_list_of_dicts)):                 ## grabs all keys in the dictionarys in the list to see all atoms useds
         for dictKey in reactants_list_of_dicts[x].keys():                                       
             all_atoms_reactants.append(dictKey)
@@ -711,7 +716,60 @@ def balancer(formula):
             return("error")
     for x in range(len(all_atoms_products)):
         if all_atoms_products[x] not in all_atoms_reactants:     ## checks if the current atom of the products list is in the reactants list  --> law of conservation of atoms
-            return("error")  
+            return("error")
+    TotalAtoms = all_atoms_reactants
+    print(total_molecules)  
+    print(multipliers)
+    numbers_range = range(1, 10)
+    correct = True
+# Generate all possible combinations
+    all_combinations = list(product(numbers_range, repeat=len(multipliers)))
+    total_combinations = len(all_combinations)
+    for x in range(len(all_combinations)):      ## all multipliers
+        #### lists we are going to need 
+        #reactants_list_of_dicts         contains all molecules like so:  [{"Na" : 1} {"Na":2 , "H" : 1}] this is an example but this represents 2 molecules
+        #products_list_of_dicts         contains all molecules like so:  [{"Na" : 1} {"Na":2 , "H" : 1}] this is an example but this represents 2 molecules
+        #TotalAtoms to figure out what atom we are on, looks like  ["Na", "H"]
+        check_list = []      ## we can append bools to see if all atoms match
+        for y in range(len(TotalAtoms)):
+            current_molecule = 0
+            current_atom = TotalAtoms[y]           ## current atom we need to equalize
+            reactants_amount = 0                   ## will be used to see how many of the current_atom is in each molecule and then in each side... if they are equal then we can continue   gets reset on every new atom
+            product_amount = 0                     ## will be used to see how many of the current_atom is in each molecule and then in each side... if they are equal then we can continue   gets reset on every new atom
+            ### first we need to do it for all reactants
+            for z in range(len(reactants_list_of_dicts)):     ## for the amount of molecules we have
+                try:
+                    reactants_amount += reactants_list_of_dicts[z][current_atom] * all_combinations[x][current_molecule]      ## reactants_list_of_dicts[z] is the current dictionary, and [current_atom] is the atom we are looking for, so this returns the value, then we multiply it by its corrective multiplier
+                except:
+                    pass
+                current_molecule += 1
+            for c in range(len(reactants_list_of_dicts)):     ## for the amount of molecules we have
+                try:
+                    product_amount += products_list_of_dicts [c][current_atom] * all_combinations[x][current_molecule]      ## reactants_list_of_dicts[z] is the current dictionary, and [current_atom] is the atom we are looking for, so this returns the value, then we multiply it by its corrective multiplier
+                except:
+                    pass
+                current_molecule += 1
+            if reactants_amount == product_amount:
+                check_list.append(True)
+                # print(all_combinations[x])
+                # print(TotalAtoms[y])
+                # print(reactants_amount)
+                # print(product_amount)
+            else:
+                check_list.append(False)
+        if False not in check_list:
+            print(all_combinations[x])
+            break
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
     #split1 = formula.split("-->")[0].split("+")
     # elements = []
     # for x in range(len(split1)):
