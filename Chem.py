@@ -651,32 +651,35 @@ def balancer(formula, max_value):
     original_products = products[:]
     print(original_reactants)
     print(original_products)
-    for x in range(len(reactants)):                     ## for the reactants
-        if "." in reactants[x] and "(" in reactants[x]:
-            reactants[x] = (hydrateHandler(reactants[x]))                   ## check for hydrates since it is less intensive and less chance of messing something up than with the paranthesis
-            reactants[x] = (atomsniffer(parentheseshandler(reactants[x])))
-            print("both")
-        elif "." in reactants[x]:               
-            reactants[x] = (atomsniffer(hydrateHandler(reactants[x])))
-            print("hydrate")
-        elif "(" in reactants[x]:
-            reactants[x] = (atomsniffer(parentheseshandler(reactants[x])))
-            print("OH group")
-        else:
-            print("normal")
-            reactants[x] = (atomsniffer(reactants[x]))
-    print("Reactants: ", reactants)
-    for x in range(len(products)):                     ## for the reactants
-        if "." in products[x] and "(" in products[x]:
-            products[x] = (hydrateHandler(products[x]))                   ## check for hydrates since it is less intensive and less chance of messing something up than with the paranthesis
-            products[x] = (atomsniffer(parentheseshandler(products[x])))
-        elif "." in products[x]:
-            products[x] = (atomsniffer(hydrateHandler(products[x])))
-        elif "(" in products[x]:
-            products[x] = (atomsniffer(parentheseshandler(products[x])))
-        else:
-            products[x] = (atomsniffer(products[x]))
-    print("Products: ", products)           ## looks like this [   [list of atoms in molecule 1]  , [list of atoms in molecule 2]  ]
+    try:
+        for x in range(len(reactants)):                     ## for the reactants
+            if "." in reactants[x] and "(" in reactants[x]:
+                reactants[x] = (hydrateHandler(reactants[x]))                   ## check for hydrates since it is less intensive and less chance of messing something up than with the paranthesis
+                reactants[x] = (atomsniffer(parentheseshandler(reactants[x])))
+                print("both")
+            elif "." in reactants[x]:               
+                reactants[x] = (atomsniffer(hydrateHandler(reactants[x])))
+                print("hydrate")
+            elif "(" in reactants[x]:
+                reactants[x] = (atomsniffer(parentheseshandler(reactants[x])))
+                print("OH group")
+            else:
+                print("normal")
+                reactants[x] = (atomsniffer(reactants[x]))
+        print("Reactants: ", reactants)
+        for x in range(len(products)):                     ## for the reactants
+            if "." in products[x] and "(" in products[x]:
+                products[x] = (hydrateHandler(products[x]))                   ## check for hydrates since it is less intensive and less chance of messing something up than with the paranthesis
+                products[x] = (atomsniffer(parentheseshandler(products[x])))
+            elif "." in products[x]:
+                products[x] = (atomsniffer(hydrateHandler(products[x])))
+            elif "(" in products[x]:
+                products[x] = (atomsniffer(parentheseshandler(products[x])))
+            else:
+                products[x] = (atomsniffer(products[x]))
+        print("Products: ", products)           ## looks like this [   [list of atoms in molecule 1]  , [list of atoms in molecule 2]  ]
+    except:
+        return("error")
 
 
 
@@ -976,7 +979,7 @@ def atomsniffer(formula):
     print(result)
     
     return(result)
-balancer("NaH + H2 + O2 --> Na(OH)2", 10)
+
 #def CandHguesser(carbon):                        ### ONLY ONE DOUBLE OR TRIPLE BOND!!!   --> not needed anymore.
     ## old way of doing it
     
