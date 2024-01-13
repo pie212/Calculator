@@ -647,7 +647,10 @@ def balancer(formula, max_value):
         reactants.append(seperated[0].split("+")[x].replace(" ", ""))     ## for the items before the -->, append them into a reactant list and remove spaces
     for x in range(len(seperated[1].split("+"))):       ## for amount of items before -->
         products.append(seperated[1].split("+")[x].replace(" ", "")) ## for the items after -->, append them into a reactant list and remove spaces
-    
+    original_reactants = reactants[:]
+    original_products = products[:]
+    print(original_reactants)
+    print(original_products)
     for x in range(len(reactants)):                     ## for the reactants
         if "." in reactants[x] and "(" in reactants[x]:
             reactants[x] = (hydrateHandler(reactants[x]))                   ## check for hydrates since it is less intensive and less chance of messing something up than with the paranthesis
@@ -774,13 +777,13 @@ def balancer(formula, max_value):
             #     print(product_amount)
             if reactants_amount == product_amount:        ## the rest is a list to check when we are correct, we append a True value to the list and if not a False, we use this to keep track if ALL atoms are equal, not just if one is
                 check_list.append(True)
-                print("total atoms: ", str(TotalAtoms))
-                print("total molecules react: ", str(reactants_list_of_dicts))
-                print("total molecules prod: ", str(reactants_list_of_dicts))
-                print(all_combinations[x])
-                print(TotalAtoms[y])
-                print(reactants_amount)
-                print(product_amount)
+                # print("total atoms: ", str(TotalAtoms))
+                # print("total molecules react: ", str(reactants_list_of_dicts))
+                # print("total molecules prod: ", str(reactants_list_of_dicts))
+                # print(all_combinations[x])
+                # print(TotalAtoms[y])
+                # print(reactants_amount)
+                # print(product_amount)
                 
             else:
                 check_list.append(False)
@@ -813,34 +816,58 @@ def balancer(formula, max_value):
     #         completed_formula += " + " 
     # print(completed_formula)
 
-    
-    for x in range(len(reactants)):
-        ## build molecule, since the reactants list looks like [[atom_1_for_molecule_1, atom_1_for_molecule_1] [atom_1_for_molecule_2, atom_2_for_molecule_2]]
-        molecule = ""
-        for y in range(len(reactants[x])):
-            molecule += reactants[x][y]
-            print(molecule)
-        if solved_solution[x] == 1:         ## this is just so instead of 1 O2 it would just be O2
-            completed_formula += molecule.replace(" ", "").replace("1", "") ## replaces spaces, like said already, the 1 is replaced for example Na1 would just be Na
+    print("tf")
+    print(original_reactants)
+    print(original_products)
+    for x in range(len(original_reactants)):
+        if solved_solution[x] == 1:
+            completed_formula += original_reactants[x].replace(" ", "").replace("1", "")
         else:
-            completed_formula += str(solved_solution[x]) + " "+ molecule.replace(" ", "").replace("1", "")     ## this replaces all the spaces in the string if there are any so then every case is the same, so then we just add a space 
-        if x != len(reactants)-1:
+            completed_formula += str(solved_solution[x]) + " "+ original_reactants[x].replace(" ", "").replace("1", "")
+        if x != len(original_reactants)-1:
             completed_formula += " + "
-
+        
     iterator = len(reactants)
     completed_formula += " --> "
-    for x in range(len(products)):
-        molecule = ""
-        for y in range(len(products[x])):
-            molecule += products[x][y]
+    for x in range(len(original_products)):
+        print("yip")
         if solved_solution[x + iterator] == 1:
-            completed_formula += molecule.replace(" ", "").replace("1", "")
+            completed_formula += original_products[x].replace(" ", "").replace("1", "")
         else:
-            completed_formula += str(solved_solution[x + iterator]) + " " + molecule.replace(" ", "").replace("1", "")
-        if x != len(products)-1:
-            completed_formula += " + " 
+            completed_formula += str(solved_solution[x + iterator]) + " "+ original_products[x].replace(" ", "").replace("1", "")
+        if x != len(original_products)-1:
+            completed_formula += " + "
     print(completed_formula)
-    return(completed_formula)   
+    return(completed_formula) 
+    ####################################old way###############################################
+    # for x in range(len(reactants)):
+    #     ## build molecule, since the reactants list looks like [[atom_1_for_molecule_1, atom_1_for_molecule_1] [atom_1_for_molecule_2, atom_2_for_molecule_2]]
+    #     molecule = ""      #original_reactants ## new version looks like ["molecule1", "molecule2"]
+    #     for y in range(len(reactants[x])):
+    #         molecule += reactants[x][y]
+    #         print(molecule)
+    #     if solved_solution[x] == 1:         ## this is just so instead of 1 O2 it would just be O2
+    #         completed_formula += molecule.replace(" ", "").replace("1", "") ## replaces spaces, like said already, the 1 is replaced for example Na1 would just be Na
+    #     else:
+    #         completed_formula += str(solved_solution[x]) + " "+ molecule.replace(" ", "").replace("1", "")     ## this replaces all the spaces in the string if there are any so then every case is the same, so then we just add a space 
+    #     if x != len(reactants)-1:
+    #         completed_formula += " + "
+    # iterator = len(reactants)
+    # completed_formula += " --> "
+    # for x in range(len(products)):
+    #     molecule = ""
+    #     for y in range(len(products[x])):
+    #         molecule += products[x][y]
+    #     if solved_solution[x + iterator] == 1:
+    #         completed_formula += molecule.replace(" ", "").replace("1", "")
+    #     else:
+    #         completed_formula += str(solved_solution[x + iterator]) + " " + molecule.replace(" ", "").replace("1", "")
+    #     if x != len(products)-1:
+    #         completed_formula += " + " 
+    # print(completed_formula)
+
+
+    # completed_formula = ""
 
     
     
@@ -949,7 +976,7 @@ def atomsniffer(formula):
     print(result)
     
     return(result)
-
+balancer("NaH + H2 + O2 --> Na(OH)2", 10)
 #def CandHguesser(carbon):                        ### ONLY ONE DOUBLE OR TRIPLE BOND!!!   --> not needed anymore.
     ## old way of doing it
     
