@@ -822,9 +822,6 @@ def balancer(formula, max_value):
     #         completed_formula += " + " 
     # print(completed_formula)
 
-    print("tf")
-    print(original_reactants)
-    print(original_products)
     for x in range(len(original_reactants)):
         if solved_solution[x] == 1:
             completed_formula += original_reactants[x].replace(" ", "").replace("1", "")

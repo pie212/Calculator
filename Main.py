@@ -445,7 +445,7 @@ if st.session_state.status != 0:
     if(st.button('Return')):
         if st.session_state.status in [3,4]:
             st.session_state.status = 1    
-        elif st.session_state.status in [5,6]:
+        elif st.session_state.status in [5,6,7,8]:
             st.session_state.status = 2
         else:  
             st.session_state.status = 0
