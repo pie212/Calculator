@@ -276,8 +276,13 @@ elif (st.session_state.status == 6):
             max_molecule_counter = int(max_molecule_counter)
         except:
             st.rerun()
-        solution = Chem.balancer(formula, int(max_molecule_counter))
-        st.write(solution)
+        solution,code = Chem.balancer(formula, int(max_molecule_counter))
+        if code == 0:
+            st.success(solution)
+        elif code == 2:
+            st.warning(solution)
+        else:
+            st.error(solution)
 elif (st.session_state.status == 7):
     col1,col2,col3, col4,col5, col6 = st.columns([0.02,0.1,0.02,0.1,0.02,0.1])
     with col1:
