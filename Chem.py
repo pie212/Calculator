@@ -917,21 +917,56 @@ def parentheseshandler(formula): ### caution, this changes the order of the atom
             if amount == "":
                 amount = "1"
             elements[str(element)] = amount
+            print("e")
             print(elements)
+        print("stack")
         print(stack)
     for x in range(len(stack)):
         print("oba joba  " + str(stack[x]))
         if ")" in stack[x]:
+            str_for_numb = stack[x].split(")")     ## goes from "SO4)3" to ["SO4, 3"]
+            
             key = list(elements)[0]                  ## gets us the key, so for example OH
+            print("key")
+            print(key)
             atomlist = re.findall(r'[A-Z][a-z]*', key)        ## finds all atoms of the key, so for OH we get O and H
-            print(atomlist)  
+            print(atomlist)   ## [S , O ] for ex
+            new = []
+            with_numb = re.findall(r'[A-Z][a-z]*\d', key)
+            for z in atomlist:                             ### here we will create a second list that will hold the amount of atoms
+                for y in range( len(with_numb)): 
+                    print(y) 
+                    print(len(with_numb))  
+                    if z in with_numb[y]:
+                        print("in")
+                        new.append(with_numb[y])     ## if the atom is in the number list, which means it has a specified amount , for ex O2,O3. but not O
+                        break
+                    else:                                               
+                        print("not in")
+                    if y == len(with_numb)-1:   ## on the final check if it is still not in the list, we will add it as 1, So to the new list we add O1 for example
+                        print("end")
+                        new.append(str(z)+"1")
+                        break
+                if len(with_numb) == 0:  ## this is if all atoms are 1, so of ex (OH)1 will not produce a with_numb list since there are not numbers, so here they will be manually added
+                    new.append(str(z)+"1")
+            for z in range(len(new)):              ## here we convert everything to pure numbers ["S1", "O2"] --> ["1", "2"]
+                new[z] = re.sub('\D', '', new[z])
+            print(new)
+            ## visualize    
+            ## ["S", "O"]    --> list of atoms
+            ## ["1", "2"]    --> amount of each atom
+
+
+
+
             burnerlist = []                    ## create list
             for y in range(len(atomlist)):           ## for amount in atom list
-                burnerlist.append(atomlist[y] + elements[key])      ## add numbers, so for ex O2H2
+                burnerlist.append(atomlist[y] + str(int(elements[key]) *int(new[y]) ) )     ## add numbers, so for ex O2H2 and make sure to multiple the amount of atoms
+            
             added_str = ""                                          ## reset string
             for z in range(len(burnerlist)):                        ## for amount of items in burnerlist, so "O2" , "H2"
                 added_str +=  burnerlist[z]                         ## we join them to get "O2H2"
-
+            
             rest_of_atoms = stack[x].split(")")
             rest_of_atoms = rest_of_atoms[1].replace(elements[key], '', 1)    ## finds left over atoms still sticking together and splits em
     
@@ -984,7 +1019,7 @@ def atomsniffer(formula):
     print(result)
     
     return(result)
-balancer("Na + H2O  --> NaOH + H2",10)
+# balancer("Al2(SO4)3 + Ca(OH)2 --> Al(OH)3 + CaSO4",10)
 #def CandHguesser(carbon):                        ### ONLY ONE DOUBLE OR TRIPLE BOND!!!   --> not needed anymore.
     ## old way of doing it
     
