@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image
 from io import BytesIO
+import re
 # Write text
 if 'status' not in st.session_state:
     st.session_state.status = 0               
@@ -56,7 +57,7 @@ elif (st.session_state.status == 1):
         st.rerun()
 elif (st.session_state.status == 2):
     st.header("Chemistry")
-    col1, col2, col3, col4 = st.columns(4)
+    col1, col2, col3, col4, col5 = st.columns(5)
     with col1:
         moleculebalancer = st.button("Molecule Balancer")
     with col2:
@@ -65,6 +66,8 @@ elif (st.session_state.status == 2):
         CandHinator = st.button("C and H inator")
     with col4:
         CandHguesser = st.button("C and H guesser")
+    with col5:
+        Stoichiometry  = st.button("Stoichiometry")
     if moleculebalancer:
         st.session_state.status = 5
         st.rerun()
@@ -76,6 +79,9 @@ elif (st.session_state.status == 2):
         st.rerun()
     elif CandHguesser:
         st.session_state.status = 8
+        st.rerun()
+    elif Stoichiometry:
+        st.session_state.status = 9
         st.rerun()
     
 
@@ -443,14 +449,83 @@ elif (st.session_state.status == 8):
             st.header("No Alkanen")
             st.header("No Alkenen")
             st.header("No Alkynen")
+
+elif (st.session_state.status == 9):
+    formula = st.text_input(label="Chemical reaction equation, does not need to be balanced")
+    balanced_formula,error, array = Chem.balancer(formula, 10, True)
+    
+    if error == 0 and formula != "":
+            st.success(balanced_formula)
+    elif error == 2 and formula != "":
+        st.warning(balanced_formula)
+    elif formula != "":
+        st.error(balanced_formula)
+
+    # Specify the number of columns you want
+    num_columns = len(array)
+
+    # Create the specified number of columns
+    cols = st.columns(num_columns)
+    
+    mol = 0
+
+    total = []
+    try:
+        seperated = formula.split("-->")
+        for x in range(len(seperated[0].split("+"))):       ## for amount of items before the -->, 1 is after and 0 is before since seperated splits into before and after the arrow
+            total.append(seperated[0].split("+")[x].replace(" ", ""))     ## for the items before the -->, append them into a reactant list and remove spaces
+        for x in range(len(seperated[1].split("+"))):       ## for amount of items before -->
+            total.append(seperated[1].split("+")[x].replace(" ", "")) ## for the items after -->, append them into a reactant list and remove spaces
+        print(total)
+
         
+        # Iterate through the list and create inputs within the columns
+        selection = st.radio("Calculate via known Mass Or Mol", ["Via Mol", "Via Mass in Grams"])
+        counter = -1
+        Known = st.radio("Calculate via known Mass Or Mol", total)
+        if selection == "Via Mol":
+            input_value = st.number_input(f"Mol {Known}" ,key = counter)
+        else:
+            input_value = st.number_input(f"Mass (g) {Known}" ,key = counter)
+        
+        if st.button("Calculate"):
+            with st.spinner('Loading... this might take a minute'):
+                solved = Chem.Stoichiometry(total,selection, Known, input_value, array )  ## total is the list of molecules, selection is if we are going to calculate by mol or mass, Known is what molecule is known, and input_value is the amount of mass or mol
+                print(solved)
+            for y in range(len(solved)):
+                print(total[y])
+                st.write(total[y])
+                col1 , col2, col3 = st.columns(3)
+                with col1:
+                    st.write("Mol: " , solved[total[y]][0], " mol")
+                with col2:
+                    st.write("Mass: " , solved[total[y]][1], "g")
+                with col3:
+                    st.write("Molar Mass: " , solved[total[y]][2], "g/mol")
+    except:
+        pass
+    # for col, item in zip(cols, array):
+    #     if error == 0:
+    #         counter += 1
+    #         # Create an input for each item within the column
+    #         # input_value = col.text_input(f"Mol {item}" ,key = counter)
+    #         st.write()
+    
+    #         #choose = col.selectbox(str(total[counter]), ("Calculate Mol and Mass", "Known Mol", "Known Mass in grams"), key = str(counter*300+counter))
+    #         # if choose == "Known Mol":
+    #         #     mol = col.text_input(f"Mol {total[counter]}" ,key = "a" + str(counter))
+    #         # if choose == "Known Mass in":
+    #         #     mol = col.text_input(f"Mol {total[counter]}" ,key = "a" + str(counter))
+    #         # You can do something with the input value if needed
+    #         # st.write(f"You entered for {item}: {input_value}")
+    # ##if (st.button("submit")):
 if st.session_state.status != 0:
     
 
     if(st.button('Return')):
         if st.session_state.status in [3,4]:
             st.session_state.status = 1    
-        elif st.session_state.status in [5,6,7,8]:
+        elif st.session_state.status in [5,6,7,8,9]:
             st.session_state.status = 2
         else:  
             st.session_state.status = 0

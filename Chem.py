@@ -637,7 +637,7 @@ def carboninator(carbon):         ## GENERATES all possible C chains with only H
                 alkynenNames.append(alkyn_name)
                 alkynenBrutos.append(alkyn_molecular_formula)
     return(strucutrealkaan, alkaaanvisual,alkaanname, alkaanbruto ,          alkenenFormula,alkenenStructure, alkenenNames, alkenenBrutos, alkynenFormula,alkynenStructure, alkynenNames, alkynenBrutos)   ##string, photo, list[strings], list[photos]      ### Structure (C-C), PHOTO , NAME, Structure(C=C). PHOTO, NAME
-def balancer(formula, max_value):
+def balancer(formula, max_value,return_array):
     t1 = time.time()
     formula = formula#"Na + H2O --> NaOH + H2"
     print("working on it")
@@ -655,7 +655,7 @@ def balancer(formula, max_value):
         print(original_reactants)
         print(original_products)
     except:
-        return("error",1)
+        return("error",1,"error")
     try:
         for x in range(len(reactants)):                     ## for the reactants
             if "." in reactants[x] and "(" in reactants[x]:
@@ -684,7 +684,7 @@ def balancer(formula, max_value):
                 products[x] = (atomsniffer(products[x]))
         print("Products: ", products)           ## looks like this [   [list of atoms in molecule 1]  , [list of atoms in molecule 2]  ]
     except:
-        return("error",1)
+        return("error",1,"error")
 
 
 
@@ -739,10 +739,10 @@ def balancer(formula, max_value):
     for x in range(len(all_atoms_reactants)):                   ## checks if the current atom of the reactants list is in the products list    --> law of conservation of atoms
         if all_atoms_reactants[x] not in all_atoms_products:   
             print("error")
-            return("The law of conservation of atoms does not seem to be applied here, please ensure that all the atoms in your reactants are also in your products!",2)
+            return("The law of conservation of atoms does not seem to be applied here, please ensure that all the atoms in your reactants are also in your products!",2,"error")
     for x in range(len(all_atoms_products)):                    ## checks if the current atom of the products list is in the reactants list  --> law of conservation of atoms
         if all_atoms_products[x] not in all_atoms_reactants:     
-            return("The law of conservation of atoms does not seem to be applied here, please ensure that all the atoms in your reactants are also in your products!",2)
+            return("The law of conservation of atoms does not seem to be applied here, please ensure that all the atoms in your reactants are also in your products!",2,"error")
     TotalAtoms = list(dict.fromkeys(all_atoms_reactants))          ## since the law of conservation of atoms is true at this stage, the used atoms is equal to the ones used in reactants or product
     print(total_molecules)  
     print(multipliers)
@@ -801,7 +801,7 @@ def balancer(formula, max_value):
             break
     if False in check_list:
         print("Not possible")
-        return("It seems like this is not possible to balance, or you may need to increase the maximum molecule amount",3)
+        return("It seems like this is not possible to balance, or you may need to increase the maximum molecule amount",3, "error")
         
     ## reconstruct string
         
@@ -843,10 +843,13 @@ def balancer(formula, max_value):
             if x != len(original_products)-1:
                 completed_formula += " + "
     except:
-        return("Error", 1)
+        return("Error", 1,"error")
     print("Time:" + str(time.time()-t1))
     print(completed_formula)
-    return(completed_formula,0) 
+    if return_array == False:
+        return(completed_formula,0)
+    else:
+        return(completed_formula, 0,solved_solution)
     ####################################old way###############################################
     # for x in range(len(reactants)):
     #     ## build molecule, since the reactants list looks like [[atom_1_for_molecule_1, atom_1_for_molecule_1] [atom_1_for_molecule_2, atom_2_for_molecule_2]]
@@ -1019,6 +1022,66 @@ def atomsniffer(formula):
     print(result)
     
     return(result)
+def Stoichiometry(molecules_list,type, molecule, amount, array):
+    molecules = molecules_list[:]
+    atom_and_amount = {}
+    print(molecules)
+    print(len(molecules))
+    print(array)
+    for x in range(len(array)):
+        atom_and_amount[molecules[x]] = int(array[x])
+    if type == "Via Mol":       ## here we will create a value dict that will look like this {"Element": ["Mass", "Mol", "Molar Mass"]}
+        try:
+            compound = pcp.get_compounds(molecule, "formula")[0]     ## searches the Pubchem webpage and grabs the first compund, returns it as compound(ID)
+        except:
+            compound = ""
+        molar_mass = float(compound.molecular_weight)       ## get molar mass from pubchem
+        print(amount)
+        single_mol = amount / atom_and_amount[molecule]     ## calculate the single mol for refrence, for ex if we have 2 Na is 1 mol, we need to be able to balance with 1 molecule being then 0.5 mol. We then multiply it by the amount of molecules
+        mass = molar_mass * (atom_and_amount[molecule] *single_mol)  ## calculate molar mass
+        print(single_mol) 
+        print(mass)
+        molecules.remove(molecule)
+        
+        solsd = {}
+        solsd[molecule] = [amount,mass,molar_mass]
+        for x in range(len(molecules)):
+            try:
+                compound = pcp.get_compounds(molecules[x], "formula")[0]     ## searches the Pubchem webpage and grabs the first compund, returns it as compound(ID)
+            except:
+                compound = ""
+            molar_mass = float(compound.molecular_weight)
+            mol = atom_and_amount[molecules[x]] *single_mol
+            mass = molar_mass * (mol)  
+            solsd[molecules[x]] = [mol,mass,molar_mass]
+        print(solsd)
+        return(solsd)
+    if type == "Via Mass in Grams":
+        try:
+            compound = pcp.get_compounds(molecule, "formula")[0]     ## searches the Pubchem webpage and grabs the first compund, returns it as compound(ID)
+        except:
+            compound = ""
+        print(compound)
+        molar_mass = float(compound.molecular_weight)       ## get molar mass from pubchem
+        mass = amount
+        mol = mass / molar_mass
+        single_mol = mol/atom_and_amount[molecule]
+        molecules.remove(molecule)
+        
+        solsd = {}
+        solsd[molecule] = [mol,mass,molar_mass]
+        for x in range(len(molecules)):
+            try:
+                compound = pcp.get_compounds(molecules[x], "formula")[0]     ## searches the Pubchem webpage and grabs the first compund, returns it as compound(ID)
+            except:
+                compound = ""
+            molar_mass = float(compound.molecular_weight)
+            mol = atom_and_amount[molecules[x]] *single_mol
+            mass = molar_mass * (mol)  
+            solsd[molecules[x]] = [mol,mass,molar_mass]
+            print("done")
+        print(solsd)
+        return(solsd)
 # balancer("Al2(SO4)3 + Ca(OH)2 --> Al(OH)3 + CaSO4",10)
 #def CandHguesser(carbon):                        ### ONLY ONE DOUBLE OR TRIPLE BOND!!!   --> not needed anymore.
     ## old way of doing it
