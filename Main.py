@@ -282,7 +282,7 @@ elif (st.session_state.status == 6):
             max_molecule_counter = int(max_molecule_counter)
         except:
             st.rerun()
-        solution,code = Chem.balancer(formula, int(max_molecule_counter), False)
+        solution,code = Chem.balancer(formula, int(max_molecule_counter))
         if code == 0:
             st.success(solution)
         elif code == 2:
@@ -452,8 +452,41 @@ elif (st.session_state.status == 8):
 
 elif (st.session_state.status == 9):
     formula = st.text_input(label="Chemical reaction equation, does not need to be balanced")
+    try:
+        ## what fucking retard made this
+        r = []         ## reactants
+        p = []         ## products
+        new_formula = ""         ## this whole block of code basicly fixes idiots.... If someone were to give in a balanced ( correct or incorrect ) the program would have a level 3 fucking stroke... So we fix it buy defaulting everything to 1, so 2H2O would just be H2O. Then we just remake everything and get a new formula
+        seperated = formula.split("-->")
+        for x in range(len(seperated[0].split("+"))):       ## for amount of items before the -->, 1 is after and 0 is before since seperated splits into before and after the arrow
+            r.append(seperated[0].split("+")[x].replace(" ", ""))     ## for the items before the -->, append them into a reactant list and remove spaces
+        for x in range(len(seperated[1].split("+"))):       ## for amount of items before -->
+            p.append(seperated[1].split("+")[x].replace(" ", "")) ## for the items after -->, append them into a reactant list and remove spaces
+        for x in range(len(r)):
+            for y in range(len(r[x])):
+                if r[x][0] in " 1234567890":
+                    r[x] = r[x][1:]
+        for x in range(len(p)):
+            for y in range(len(p[x])):
+                if p[x][0] in " 1234567890":
+                    p[x] = p[x][1:]
+        for x in range(len(r)):
+            if x != len(r)-1:
+                new_formula += str(r[x]) + "+"
+            else:
+                new_formula += str(r[x]) + "-->"
+        for x in range(len(p)):
+            if x != len(p)-1:
+                new_formula += str(p[x]) + "+"
+            else:
+                new_formula += str(p[x])
+        print("Wh ynot work?")
+        print(new_formula)
+        formula = new_formula
+    except:
+        print("fuck it aint work")
     balanced_formula,error, array = Chem.balancer(formula, 10, True)
-    formula = balanced_formula
+    formula = new_formula
     if error == 0 and formula != "":
             st.success(balanced_formula)
     elif error == 2 and formula != "":
@@ -477,6 +510,7 @@ elif (st.session_state.status == 9):
         for x in range(len(seperated[1].split("+"))):       ## for amount of items before -->
             total.append(seperated[1].split("+")[x].replace(" ", "")) ## for the items after -->, append them into a reactant list and remove spaces
         print(total)
+        print("TOTALALALALLA")
 
         
         # Iterate through the list and create inputs within the columns
@@ -491,10 +525,11 @@ elif (st.session_state.status == 9):
         if st.button("Calculate"):
             with st.spinner('Loading... this might take a minute'):
                 solved = Chem.Stoichiometry(total,selection, Known, input_value, array )  ## total is the list of molecules, selection is if we are going to calculate by mol or mass, Known is what molecule is known, and input_value is the amount of mass or mol
-                print(solved)
+                print(solved)   ## solved returns as a dict like this {"NaOH" : [mol,mass,molar mass]} but unbalanced so we need to turn the total list to also be unbalanced
+            print(solved)
             for y in range(len(solved)):
                 print(total[y])
-                st.write(total[y])
+                st.write(str(array[y]) + " "+ total[y])     ## since the molecules were defaulted to 0 in the first code in the function, we have to add the amount of molecules back from the array... This is autistic
                 col1 , col2, col3 = st.columns(3)
                 with col1:
                     st.write("Mol: " , solved[total[y]][0], " mol")

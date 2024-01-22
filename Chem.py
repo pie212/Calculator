@@ -651,7 +651,7 @@ def balancer(formula, max_value,return_array):
         for x in range(len(seperated[1].split("+"))):       ## for amount of items before -->
             products.append(seperated[1].split("+")[x].replace(" ", "")) ## for the items after -->, append them into a reactant list and remove spaces
         
-        ## takes care of changing halfassed balanced formulas for ex if we have 2H2O but it aint correct or whatever, we change it to H2O... Easier for output, easier for pc, win win
+        # takes care of changing half assed balanced formulas for ex if we have 2H2O but it aint correct or whatever, we change it to H2O... Easier for output, easier for pc, win win
         for x in range(len(reactants)):
             for y in range(len(reactants[x])):
                 if reactants[x][0] in " 1234567890":
@@ -1038,11 +1038,14 @@ def atomsniffer(formula):
     return(result)
 def Stoichiometry(molecules_list,type, molecule, amount, array):
     molecules = molecules_list[:]
+    print("the actual fuck")
     print(molecules)
-    for x in range(len(molecules)):
-        for y in range(len[molecules[x]]):
-            if molecules[x][0] in " 1234567890":
-                molecules[x] = molecules[x][1:]
+    print(molecules_list)
+    print(type)
+    print(molecule)
+    print(amount)
+    print(array)
+    print(molecules)
     print(molecules)
     atom_and_amount = {}
     print(molecules)
