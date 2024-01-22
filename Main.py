@@ -282,7 +282,7 @@ elif (st.session_state.status == 6):
             max_molecule_counter = int(max_molecule_counter)
         except:
             st.rerun()
-        solution,code = Chem.balancer(formula, int(max_molecule_counter))
+        solution,code = Chem.balancer(formula, int(max_molecule_counter), False)
         if code == 0:
             st.success(solution)
         elif code == 2:
@@ -453,7 +453,7 @@ elif (st.session_state.status == 8):
 elif (st.session_state.status == 9):
     formula = st.text_input(label="Chemical reaction equation, does not need to be balanced")
     balanced_formula,error, array = Chem.balancer(formula, 10, True)
-    
+    formula = balanced_formula
     if error == 0 and formula != "":
             st.success(balanced_formula)
     elif error == 2 and formula != "":
