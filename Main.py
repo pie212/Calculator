@@ -282,7 +282,7 @@ elif (st.session_state.status == 6):
             max_molecule_counter = int(max_molecule_counter)
         except:
             st.rerun()
-        solution,code = Chem.balancer(formula, int(max_molecule_counter))
+        solution,code = Chem.balancer(formula, int(max_molecule_counter), False)
         if code == 0:
             st.success(solution)
         elif code == 2:
@@ -453,10 +453,10 @@ elif (st.session_state.status == 8):
 elif (st.session_state.status == 9):
     formula = st.text_input(label="Chemical reaction equation, does not need to be balanced")
     try:
-        ## what fucking retard made this
+        
         r = []         ## reactants
         p = []         ## products
-        new_formula = ""         ## this whole block of code basicly fixes idiots.... If someone were to give in a balanced ( correct or incorrect ) the program would have a level 3 fucking stroke... So we fix it buy defaulting everything to 1, so 2H2O would just be H2O. Then we just remake everything and get a new formula
+        new_formula = ""         ## this whole block of code basicly fixes idiots.... If someone were to give in a balanced ( correct or incorrect ) the program would have a level 3 uh oh ing stroke... So we fix it buy defaulting everything to 1, so 2H2O would just be H2O. Then we just remake everything and get a new formula
         seperated = formula.split("-->")
         for x in range(len(seperated[0].split("+"))):       ## for amount of items before the -->, 1 is after and 0 is before since seperated splits into before and after the arrow
             r.append(seperated[0].split("+")[x].replace(" ", ""))     ## for the items before the -->, append them into a reactant list and remove spaces
@@ -484,7 +484,7 @@ elif (st.session_state.status == 9):
         print(new_formula)
         formula = new_formula
     except:
-        print("fuck it aint work")
+        print("uh oh  it aint work")
     balanced_formula,error, array = Chem.balancer(formula, 10, True)
     formula = new_formula
     if error == 0 and formula != "":
@@ -510,7 +510,8 @@ elif (st.session_state.status == 9):
         for x in range(len(seperated[1].split("+"))):       ## for amount of items before -->
             total.append(seperated[1].split("+")[x].replace(" ", "")) ## for the items after -->, append them into a reactant list and remove spaces
         print(total)
-        print("TOTALALALALLA")
+        ## total looks like this [element1, element2, ...]
+        total = list(dict.fromkeys(total))
 
         
         # Iterate through the list and create inputs within the columns

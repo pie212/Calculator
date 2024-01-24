@@ -701,7 +701,10 @@ def balancer(formula, max_value,return_array):
         return("error",1,"error")
 
 
-
+    ## now we have 2 lists that contain our products and reactants
+    ## for Na + H2O --> NaOH + H2
+    ## reactants = [["Na1"]["H2","O1"]]
+    ## prducts = [["Na1", "O1", "H1"]["H2"]]
 
 
     reactants_list_of_dicts = []  
@@ -715,7 +718,7 @@ def balancer(formula, max_value,return_array):
         for key in x:
             x[key] = int(x[key])
     print("Reactants:")
-    print(reactants_list_of_dicts)
+    print(reactants_list_of_dicts)## so at this point we have a list with all reactants like so [{AtomMolecule1:amount, AtomMolecule2: Amount}, {AtomMolecule2:amount, AtomMolecule1: Amount}]
 
 
     products_list_of_dicts = []  
@@ -729,7 +732,10 @@ def balancer(formula, max_value,return_array):
         for key in x:
             x[key] = int(x[key])
     print("Products")
-    print(products_list_of_dicts)
+    print(products_list_of_dicts)        ## so at this point we have a list with all products like so [{AtomMolecule1:amount, AtomMolecule2: Amount}, {AtomMolecule2:amount, AtomMolecule1: Amount}]
+    ## for ex if we have Na + H2O --> NaOH + H2
+    ## reactants_list_of_dicts == [{"Na" : 1},{"H": 2, "O", 1}]
+    ## reactants_list_of_dicts == [{"Na" : 1},{"H": 2, "O", 1}]
     ##### actual thinking logic now :(
     ## base case with 1
     multiplier = 1
@@ -740,7 +746,9 @@ def balancer(formula, max_value,return_array):
     total_molecules = len(reactants_list_of_dicts) + len(products_list_of_dicts)             ## this shows the TOTAL amount of molecules in a the equation
     multipliers = []    ## this will be the total multipliers but gets a value later on
     for x in range(total_molecules):             ## this adds 1 in the multiplier list for every molecule, so if we have 3 molecules it would be [1,1,1]
-        multipliers.append(1)
+        multipliers.append(1)                    ## this will be used to create the array and we need to to be the correct length en start at 1 so we can properly iterate
+    
+    ## makes lists to check conservation of atoms (1)
     for x in range(len(reactants_list_of_dicts)):                 ## grabs all keys in the dictionarys in the list to see all atoms useds
         for dictKey in reactants_list_of_dicts[x].keys():         ## this adds all the atoms used in the reactants into a list                              
             all_atoms_reactants.append(dictKey) 
@@ -750,6 +758,8 @@ def balancer(formula, max_value,return_array):
         for dictKey in products_list_of_dicts[x].keys():          ## this adds all the atoms used in the products into a list                                   
             all_atoms_products.append(dictKey)
     print(all_atoms_products)
+
+    ## conservation of atoms (2)
     for x in range(len(all_atoms_reactants)):                   ## checks if the current atom of the reactants list is in the products list    --> law of conservation of atoms
         if all_atoms_reactants[x] not in all_atoms_products:   
             print("error")
@@ -758,32 +768,42 @@ def balancer(formula, max_value,return_array):
         if all_atoms_products[x] not in all_atoms_reactants:     
             return("The law of conservation of atoms does not seem to be applied here, please ensure that all the atoms in your reactants are also in your products!",2,"error")
     TotalAtoms = list(dict.fromkeys(all_atoms_reactants))          ## since the law of conservation of atoms is true at this stage, the used atoms is equal to the ones used in reactants or product
+    ## the above line of code grabs each atom in the reactants and products and CROSS checks them to make sure the atoms are conserved
+    ## so for Na + H2O --> NaOH + H2  (1)
+    ## ["Na", "H", "O"]    <-- Reactants (1)
+    ## ["Na", "O", "H","H"] <-- Products (1)
+    ## then we just check to make search each atom from reactants is in the products list and vice versa   (2) 
     print(total_molecules)  
     print(multipliers)
     numbers_range = range(1, max_value)    ## the maximum amount we can go to for balancing the equation, so a maximum of a certain amount of molecules
-    correct = True
-# Generate all possible combinations
+    # Generate all possible combinations
     all_combinations = list(product(numbers_range, repeat=len(multipliers)))
-    total_combinations = len(all_combinations)
     for x in range(len(all_combinations)):      ## all multipliers
         #### lists we are going to need 
         #reactants_list_of_dicts         contains all molecules like so:  [{"Na" : 1} {"Na":2 , "H" : 1}] this is an example but this represents 2 molecules
         #products_list_of_dicts         contains all molecules like so:  [{"Na" : 1} {"Na":2 , "H" : 1}] this is an example but this represents 2 molecules
         #TotalAtoms to figure out what atom we are on, looks like  ["Na", "H"]
-        check_list = []      ## we can append bools to see if all atoms match
+        check_list = []      ## we can append bools to see if all atoms match, looks like this for 3 molecule [true,true,true] and then this will be the answer, but if for ex the first item is false we break and start a new array of numbers, saves a bit of computing power
         for y in range(len(TotalAtoms)):
             current_molecule = 0
-            current_atom = TotalAtoms[y]           ## current atom we need to equalize
+            current_atom = TotalAtoms[y]           ## current atom we need to equalize so for ex H
             reactants_amount = 0                   ## will be used to see how many of the current_atom is in each molecule and then in each side... if they are equal then we can continue   gets reset on every new atom
             product_amount = 0                     ## will be used to see how many of the current_atom is in each molecule and then in each side... if they are equal then we can continue   gets reset on every new atom
             ### first we need to do it for all reactants
             for z in range(len(reactants_list_of_dicts)):     ## for the amount of molecules we have
-                try:
+                try:      ## for amount of items in the reactants list, for for ex [{"Na" : 1}{"H": 2, "O", 1}] will run twice
                     reactants_amount += reactants_list_of_dicts[z][current_atom] * all_combinations[x][current_molecule]      ## reactants_list_of_dicts[z] is the current dictionary, and [current_atom] is the atom we are looking for, so this returns the value, then we multiply it by its corrective multiplier
+                    ## for the first pass, in the list stated above, and lets say our current atom is H and our array is 2,2,2,2
+                    ## we would check for H in the first dict which only has Na, so we would just add 0 to the reactant amount
+                    ## on the second pass, we would check the second dict which has 2 H atoms, and then multiply it by the current array number, so 2 
+                    ## this would add 4 to the reactants amount.
+                    ## visualsed if we have Na + 2 H2O --> NaOH + H2
+                    ## we have 1 Na atom, 4 H atoms, and 2 O atoms in the reactants
+                    ## this process will repeat for every atom until each atom is sucsesfully equal to each other
                 except:
                     pass
                 current_molecule += 1
-            for c in range(len(products_list_of_dicts)):     ## for the amount of molecules we have
+            for c in range(len(products_list_of_dicts)):     ## for the amount of molecules we have (SEE ABOVE)
                 try:
                     product_amount += products_list_of_dicts[c][current_atom] * all_combinations[x][current_molecule]      ## reactants_list_of_dicts[c] is the current dictionary, and [current_atom] is the atom we are looking for, so this returns the value, then we multiply it by its corrective multiplier
                 except:
@@ -799,6 +819,8 @@ def balancer(formula, max_value,return_array):
             #     print(product_amount)
             if reactants_amount == product_amount:        ## the rest is a list to check when we are correct, we append a True value to the list and if not a False, we use this to keep track if ALL atoms are equal, not just if one is
                 check_list.append(True)
+                # THIS checks if each amount of molecules is equal, so if we have 4 H atoms in the reactants and 4 H atoms in products
+                # we then pass a True for the H atom, if all the atoms return True that means everything is correct
                 # print("total atoms: ", str(TotalAtoms))
                 # print("total molecules react: ", str(reactants_list_of_dicts))
                 # print("total molecules prod: ", str(reactants_list_of_dicts))
@@ -849,7 +871,6 @@ def balancer(formula, max_value,return_array):
         iterator = len(reactants)
         completed_formula += " --> "
         for x in range(len(original_products)):
-            print("yip")
             if solved_solution[x + iterator] == 1:
                 completed_formula += original_products[x].replace(" ", "").replace("1", "")
             else:
@@ -857,7 +878,10 @@ def balancer(formula, max_value,return_array):
             if x != len(original_products)-1:
                 completed_formula += " + "
     except:
-        return("Error", 1,"error")
+        if return_array:
+            return("Error", 1,"error")
+        else:
+            return("Error", 1)
     print("Time:" + str(time.time()-t1))
     print(completed_formula)
     if return_array == False:
@@ -1038,7 +1062,7 @@ def atomsniffer(formula):
     return(result)
 def Stoichiometry(molecules_list,type, molecule, amount, array):
     molecules = molecules_list[:]
-    print("the actual fuck")
+    print("the actual uh oh ")
     print(molecules)
     print(molecules_list)
     print(type)
@@ -1105,6 +1129,8 @@ def Stoichiometry(molecules_list,type, molecule, amount, array):
             print("done")
         print(solsd)
         return(solsd)
+balancer("H2O + Na --> NaOH + H2", 10,False)
+
 # balancer("Al2(SO4)3 + Ca(OH)2 --> Al(OH)3 + CaSO4",10)
 #def CandHguesser(carbon):                        ### ONLY ONE DOUBLE OR TRIPLE BOND!!!   --> not needed anymore.
     ## old way of doing it
