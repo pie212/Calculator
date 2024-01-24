@@ -511,7 +511,7 @@ elif (st.session_state.status == 9):
             total.append(seperated[1].split("+")[x].replace(" ", "")) ## for the items after -->, append them into a reactant list and remove spaces
         print(total)
         ## total looks like this [element1, element2, ...]
-        total = list(dict.fromkeys(total))
+        # total = list(dict.fromkeys(total))
 
         
         # Iterate through the list and create inputs within the columns
