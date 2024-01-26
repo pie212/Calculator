@@ -451,7 +451,9 @@ elif (st.session_state.status == 8):
             st.header("No Alkynen")
 
 elif (st.session_state.status == 9):
-    formula = st.text_input(label="Chemical reaction equation, does not need to be balanced")
+    formula = st.text_input(label="Chemical reaction equation, does not need to be balanced. For example: Na + H2O --> NaOH + H2")
+    
+    
     try:
         
         r = []         ## reactants
@@ -484,8 +486,9 @@ elif (st.session_state.status == 9):
         print(new_formula)
         formula = new_formula
     except:
-        print("uh oh  it aint work")
-    balanced_formula,error, array = Chem.balancer(formula, 10, True)
+        print("uh oh  it aint work")        
+    balanced_formula,error, array = Chem.balancer(formula, 10, True) # --> only accepts a single string writh an UNBALANCED formula to eat up
+    ## formula isnt actually balanced, we use the array to manually balance it
     formula = new_formula
     if error == 0 and formula != "":
             st.success(balanced_formula)
@@ -503,21 +506,30 @@ elif (st.session_state.status == 9):
     mol = 0
 
     total = []
+    total_balanced = []
     try:
+        
         seperated = formula.split("-->")
         for x in range(len(seperated[0].split("+"))):       ## for amount of items before the -->, 1 is after and 0 is before since seperated splits into before and after the arrow
             total.append(seperated[0].split("+")[x].replace(" ", ""))     ## for the items before the -->, append them into a reactant list and remove spaces
         for x in range(len(seperated[1].split("+"))):       ## for amount of items before -->
             total.append(seperated[1].split("+")[x].replace(" ", "")) ## for the items after -->, append them into a reactant list and remove spaces
         print(total)
+        seperated = balanced_formula.split("-->")
+        for x in range(len(seperated[0].split("+"))):       ## for amount of items before the -->, 1 is after and 0 is before since seperated splits into before and after the arrow
+            total_balanced.append(seperated[0].split("+")[x].replace(" ", ""))     ## for the items before the -->, append them into a reactant list and remove spaces
+        for x in range(len(seperated[1].split("+"))):       ## for amount of items before -->
+            total_balanced.append(seperated[1].split("+")[x].replace(" ", "")) ## for the items after -->, append them into a reactant list and remove spaces
+        print(total_balanced)
         ## total looks like this [element1, element2, ...]
         # total = list(dict.fromkeys(total))
 
         
         # Iterate through the list and create inputs within the columns
         selection = st.radio("Calculate via known Mass Or Mol", ["Via Mol", "Via Mass in Grams"])
+        
         counter = -1
-        Known = st.radio("Calculate via known Mass Or Mol", total)
+        Known = st.radio("Calculate via known Mass Or Mol", total_balanced)
         if selection == "Via Mol":
             input_value = st.number_input(f"Mol {Known}" ,key = counter)
         else:
@@ -525,19 +537,30 @@ elif (st.session_state.status == 9):
         
         if st.button("Calculate"):
             with st.spinner('Loading... this might take a minute'):
-                solved = Chem.Stoichiometry(total,selection, Known, input_value, array )  ## total is the list of molecules, selection is if we are going to calculate by mol or mass, Known is what molecule is known, and input_value is the amount of mass or mol
+                solved = Chem.Stoichiometry(total,selection, Known, input_value, array,total_balanced )  ## total is the list of molecules, selection is if we are going to calculate by mol or mass, Known is what molecule is known, and input_value is the amount of mass or mol
+                            ## this function will only eat a list of molecules and if you feed it anything out it will not work
                 print(solved)   ## solved returns as a dict like this {"NaOH" : [mol,mass,molar mass]} but unbalanced so we need to turn the total list to also be unbalanced
             print(solved)
+            try:
+                array = list(array)
+                total_balanced = list(solved.keys())
+                print("ee")
+                print(total_balanced)
+                for x in range(total_balanced):
+                    total_balanced[x] = str(array[x]) + total_balanced[x] 
+                print(total_balanced)
+            except Exception as error:
+                print(error)
             for y in range(len(solved)):
-                print(total[y])
-                st.write(str(array[y]) + " "+ total[y])     ## since the molecules were defaulted to 0 in the first code in the function, we have to add the amount of molecules back from the array... This is autistic
+                print(total_balanced[y])
+                st.write(total_balanced[y])     ## since the molecules were defaulted to 0 in the first code in the function, we have to add the amount of molecules back from the array... This is autistic
                 col1 , col2, col3 = st.columns(3)
                 with col1:
-                    st.write("Mol: " , solved[total[y]][0], " mol")
+                    st.write("Mol: " , solved[total_balanced[y]][0], " mol")
                 with col2:
-                    st.write("Mass: " , solved[total[y]][1], "g")
+                    st.write("Mass: " , solved[total_balanced[y]][1], "g")
                 with col3:
-                    st.write("Molar Mass: " , solved[total[y]][2], "g/mol")
+                    st.write("Molar Mass: " , solved[total_balanced[y]][2], "g/mol")
     except:
         pass
     # for col, item in zip(cols, array):

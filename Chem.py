@@ -1060,11 +1060,17 @@ def atomsniffer(formula):
     print(result)
     
     return(result)
-def Stoichiometry(molecules_list,type, molecule, amount, array):
-    molecules = molecules_list[:]
+def Stoichiometry(molecules,type, molecule, amount, array, balanced_molecule_list): ## balanced molecule list is the 
+    array = list(array)
+    print("Molecule")
+    print(molecule)
+    ## same as the molecule one but has the numbers in front of it... like 2Na instead of Na. 
+    ## Want to try to integrate this to remove the correct item if we were to have multiple
+    ## Molecules that might have different iterators, for ex 2O2 and O2... Right now it 
+    ## will just calculate the O2
+    
     print("the actual uh oh ")
     print(molecules)
-    print(molecules_list)
     print(type)
     print(molecule)
     print(amount)
@@ -1076,10 +1082,12 @@ def Stoichiometry(molecules_list,type, molecule, amount, array):
     print(len(molecules))
     print(array)
     for x in range(len(array)):
-        atom_and_amount[molecules[x]] = int(array[x])
+        atom_and_amount[balanced_molecule_list[x]] = int(array[x])
+    print(atom_and_amount)
     if type == "Via Mol":       ## here we will create a value dict that will look like this {"Element": ["Mass", "Mol", "Molar Mass"]}
         try:
-            compound = pcp.get_compounds(molecule, "formula")[0]     ## searches the Pubchem webpage and grabs the first compund, returns it as compound(ID)
+            index = balanced_molecule_list.index(molecule)
+            compound = pcp.get_compounds(molecules[index], "formula")[0]     ## searches the Pubchem webpage and grabs the first compund, returns it as compound(ID)
         except:
             compound = ""
         molar_mass = float(compound.molecular_weight)       ## get molar mass from pubchem
@@ -1088,33 +1096,80 @@ def Stoichiometry(molecules_list,type, molecule, amount, array):
         mass = molar_mass * (atom_and_amount[molecule] *single_mol)  ## calculate molar mass
         print(single_mol) 
         print(mass)
-        molecules.remove(molecule)
+        ### gonna pull a big brain over here
+        ## if we dont know the iterator of the molecule but we need to find it out,,, could we do it by diving the mol??
+        ## for example we could figure out by doing amount/single mol and rounding to the nearest integer....
+        # am_molecule = int(round(amount/single_mol))
+        # if am_molecule == 1:
+        #     am_molecule = ""
+        # print("Amount")
+        # print(am_molecule)
+        # rebuilt_molecule = str(am_molecule) + molecule
+        # print(rebuilt_molecule)
+        # index = balanced_molecule_list.index(rebuilt_molecule)
+        # molecules_list.pop(int(index))
         
+        index = balanced_molecule_list.index(molecule)
+        print(index)
+        molecules.pop(int(index))
+        #balanced_molecule_list.remove(molecule)
+        array.pop(int(index))
+       
+        print(balanced_molecule_list)
+        print(array)
+        
+        # array.pop(int(index))
+    
+        # print(index)
+        # print(balanced_molecule_list)
+        # print(molecules_list)
+        # print(array)
         solsd = {}
+        # solsd[rebuilt_molecule] = [amount,mass,molar_mass]
+
         solsd[molecule] = [amount,mass,molar_mass]
         for x in range(len(molecules)):
             try:
                 compound = pcp.get_compounds(molecules[x], "formula")[0]     ## searches the Pubchem webpage and grabs the first compund, returns it as compound(ID)
-            except:
+            except Exception as e:
+                print(e)
                 compound = ""
-            molar_mass = float(compound.molecular_weight)
-            mol = atom_and_amount[molecules[x]] *single_mol
-            mass = molar_mass * (mol)  
-            solsd[molecules[x]] = [mol,mass,molar_mass]
+            try:
+                molar_mass = float(compound.molecular_weight)
+                mol = atom_and_amount[balanced_molecule_list[x]] *single_mol
+                mass = molar_mass * (mol)
+                solsd[balanced_molecule_list[x]] = [mol,mass,molar_mass]
+            except Exception as e:
+                print(e)
+            # try:  
+            #     solsd[str(array[x]) + molecules[x]] = [mol,mass,molar_mass]
+            # except Exception as e:
+            #     print("broken")
+            #     print(e)
         print(solsd)
         return(solsd)
     if type == "Via Mass in Grams":
         try:
-            compound = pcp.get_compounds(molecule, "formula")[0]     ## searches the Pubchem webpage and grabs the first compund, returns it as compound(ID)
-        except:
+            index = balanced_molecule_list.index(molecule)
+            compound = pcp.get_compounds(molecules[index], "formula")[0]     ## searches the Pubchem webpage and grabs the first compund, returns it as compound(ID)
+        except Exception as e:
+            print(e)
             compound = ""
         print(compound)
         molar_mass = float(compound.molecular_weight)       ## get molar mass from pubchem
         mass = amount
         mol = mass / molar_mass
         single_mol = mol/atom_and_amount[molecule]
-        molecules.remove(molecule)
         
+        
+        index = balanced_molecule_list.index(molecule)
+        print(index)
+        molecules.pop(int(index))
+        balanced_molecule_list.remove(molecule)
+        array.pop(int(index))
+       
+        print(balanced_molecule_list)
+        print(array)
         solsd = {}
         solsd[molecule] = [mol,mass,molar_mass]
         for x in range(len(molecules)):
@@ -1123,9 +1178,9 @@ def Stoichiometry(molecules_list,type, molecule, amount, array):
             except:
                 compound = ""
             molar_mass = float(compound.molecular_weight)
-            mol = atom_and_amount[molecules[x]] *single_mol
+            mol = atom_and_amount[balanced_molecule_list[x]] *single_mol
             mass = molar_mass * (mol)  
-            solsd[molecules[x]] = [mol,mass,molar_mass]
+            solsd[balanced_molecule_list[x]] = [mol,mass,molar_mass]
             print("done")
         print(solsd)
         return(solsd)
