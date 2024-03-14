@@ -19,8 +19,10 @@ def MoleculeStable(element1,element2):
     groupIV = {"C": [2,4, 2.5],"Si": [4, 1.8],"Ge": [4, 1.8], "Sn": [2,4, 1.8], "Pb": [2,4, 1.8]}
     groupV = {"N": [1,3,5, 3.0],"P": [3,5, 2.1], "As": [5, 2.0], "Sb": [4, 1.9], "Bi": [4, 1.8]}
     groupVI = {"O": [1,6, 3.5],"S": [2,4,6, 2.5],"Se": [4,6, 2.4],"Te": [6, 2.1],"Po": [6, 2.0]}  ## quick bit of thinking i should think of. So we know that S en F leads to SF2 and SF6 because we have the structure of -        which is 6 total electrons on the shell, 4 valence ones. In SF2 F bonds with the free electrons but since it has 7 electrons they each share 1 electron, causing the need for 2 F atoms to be present.                                                     *
-    groupVII = {"F": [7, 4.0], "Cl": [1,3,5,7, 3.0], "Br": [1,3,5,7, 2.8],"I": [1,3,5,7, 2.5],"At": [7, 2.2]}                                                                                    #                     *    *     However with SF6 the 2 valence pairs break, allowing the 6 electrons to bond with 6 Fluor electrons, so the question I want to ask in a week is, can we predict this for all elements? And why could we not keep 1 pair and get SF4, we would then have  *   *    -->> but in SF6 S would then have 12 valence electrons, not 6... HOW???
+    groupVII = {"F": [7, 4.0], "Cl": [1,3,5,7, 3.0], "Br": [1,3,5,7, 2.8],"I": [1,3,5,7, 2.5],"At": [7, 2.2]}                                                                                      #                     *    *     However with SF6 the 2 valence pairs break, allowing the 6 electrons to bond with 6 Fluor electrons, so the question I want to ask in a week is, can we predict this for all elements? And why could we not keep 1 pair and get SF4, we would then have  *   *    -->> but in SF6 S would then have 12 valence electrons, not 6... HOW???
+    Functional_groups = {"HP": [6, 8, 2.1],}
     groups =  [groupI,groupII,groupIII,groupIV,groupV,groupVI, groupVII]                                                                                                                         #                       -                                                                                                                                                                                                                                                                   -        ## how can C have -2??? 2 pictures trying to figure that out on my desktop
+    
     # element1 = "Na"
     # element2 = "Cl"
     sols = []
@@ -748,7 +750,7 @@ def balancer(formula, max_value,return_array):
     multipliers = []    ## this will be the total multipliers but gets a value later on
     for x in range(total_molecules):             ## this adds 1 in the multiplier list for every molecule, so if we have 3 molecules it would be [1,1,1]
         multipliers.append(1)                    ## this will be used to create the array and we need to to be the correct length en start at 1 so we can properly iterate
-    
+    ## CHECKS CONSERVATION OF ATOMS START
     ## makes lists to check conservation of atoms (1)
     for x in range(len(reactants_list_of_dicts)):                 ## grabs all keys in the dictionarys in the list to see all atoms useds
         for dictKey in reactants_list_of_dicts[x].keys():         ## this adds all the atoms used in the reactants into a list                              
@@ -769,6 +771,7 @@ def balancer(formula, max_value,return_array):
         if all_atoms_products[x] not in all_atoms_reactants:     
             return("The law of conservation of atoms does not seem to be applied here, please ensure that all the atoms in your reactants are also in your products!",2,"error")
     TotalAtoms = list(dict.fromkeys(all_atoms_reactants))          ## since the law of conservation of atoms is true at this stage, the used atoms is equal to the ones used in reactants or product
+     ## CHECKS CONSERVATION OF ATOMS END
     ## the above line of code grabs each atom in the reactants and products and CROSS checks them to make sure the atoms are conserved
     ## so for Na + H2O --> NaOH + H2  (1)
     ## ["Na", "H", "O"]    <-- Reactants (1)
@@ -832,6 +835,7 @@ def balancer(formula, max_value,return_array):
                 
             else:
                 check_list.append(False)
+        print(all_combinations[x])
         if False not in check_list:
             print(all_combinations[x])
             solved_solution = all_combinations[x]
@@ -1209,6 +1213,9 @@ def BasicReactionPredictor(formula):
         if x == "O2"and cont == True :
             type_list.append("O2")
             cont = False
+        if x == "H"and cont == True :
+            type_list.append("H")
+            cont = False
         for y in metals: 
             if x == y and cont == True:
                 type_list.append("Metal")
@@ -1219,25 +1226,41 @@ def BasicReactionPredictor(formula):
                 cont = False
         print(cont)
         if x != "" and cont == True:
+            print("list")
+            print(type_list)
             type_list.append(moleculeClassifier(x))
+            print("hol up")
+            print(type_list)
     ## logic 
     if len(type_list) == 2: ## only if we have 2 molecules, not smart enough atm to do more
         print("##")
         print(type_list)
         if "Metal" in type_list and "O2" in type_list:
             print("Metal Oxide")
+            return("Metal Oxide", type_list)
         elif "Non Metal" in type_list and "O2" in type_list:
             print("Non Metal Oxide") 
+            return("Non Metal Oxide", type_list)
         elif "Non Metal Oxide" in type_list and "H2O" in type_list:
             print("Ternary Acid")
+            return("Ternary Acid", type_list)
         elif "Metal Oxide" in type_list and "H2O" in type_list:
             print("Base")
+            return("Base", type_list)
         elif "Metal Oxide" in type_list and "Non Metal Oxide" in type_list:
             print("Ternary Salt")
+        elif "H" in type_list and "Non Metal" in type_list:
+            print("Binary Acid")
+            return("Binary Acid", type_list)
         elif "Base" in type_list and "Ternary Acid" in type_list:
             print("Ternary Salt + H2O")
+            return("Ternary Salt", type_list)
+        # elif "Hydrogen_Acid_Start" in type_list and "Non Metal" in type_list:
+        #     print("Binary Acid")
+        #     return("Ternary Acid")
         else:
             print("none found")
+            return("None", type_list)
     ## for reactions which have 2 molecules ex NaOH + HCl
     ## determine first type of 
 def moleculeClassifier(molecule): ## eats a full molecule
@@ -1307,18 +1330,31 @@ def moleculeClassifier(molecule): ## eats a full molecule
     if len(type_list) == 2: ## 2 items, for ex oxide and non metal
         if (type_list[0] == "Oxide_End" and type_list[1] == "metal") or (type_list[1] == "Oxide_End" and type_list[0] == "metal"):
             return "Metal Oxide"
-        if (type_list[0] == "Oxide_End" and type_list[1] == "non metal") or (type_list[1] == "Oxide_End" and type_list[0] == "non metal"):
+        elif (type_list[0] == "Oxide_End" and type_list[1] == "non metal") or (type_list[1] == "Oxide_End" and type_list[0] == "non metal"):
             return "Non Metal Oxide"
-        if (type_list[0] == "Hydrogen_Acid_Start" and type_list[1] == "non metal") or (type_list[1] == "Hydrogen_Acid_Start" and type_list[0] == "non metal"):
+        elif (type_list[0] == "Hydrogen_Acid_Start" and type_list[1] == "non metal") or (type_list[1] == "Hydrogen_Acid_Start" and type_list[0] == "non metal"):
             return "Binary Acid" 
-        if (type_list[0] == "Hydrogen_Acid_Start" and type_list[1] == "Acid_Group") or (type_list[1] == "Hydrogen_Acid_Start" and type_list[0] == "Acid_Group"):
+        elif (type_list[0] == "Hydrogen_Acid_Start" and type_list[1] == "Acid_Group") or (type_list[1] == "Hydrogen_Acid_Start" and type_list[0] == "Acid_Group"):
             return "Ternary Acid" 
-        if (type_list[0] == "OH-group" and type_list[1] == "metal") or (type_list[1] == "OH-group" and type_list[0] == "metal"):
+        elif (type_list[0] == "OH-group" and type_list[1] == "metal") or (type_list[1] == "OH-group" and type_list[0] == "metal"):
             return "Base"
+        ## single things ALWAYS LAST, we just check if the molecule is a metal or non metal, for example in the reaction H + Cl2 we needa be able to say that Cl2 is a non metal and acts as a non metal to create an acid
+    elif len(type_list) == 1:
+        if (type_list[0] == "non metal"):
+            return("Non Metal")
+        elif (type_list[0] == "metal"):
+            return("Metal")
 
+def Dilution(ctype, c1, c2, v2):
+    if ctype == "mol":
+        v1 = (v2 * c2)/ c1
+        volume_water = v2-v1
+        return(v1, volume_water)
+
+# print(round(Dilution("mol", 6.00, 0.800, 0.250)[0],6), "l and" , round(Dilution("mol", 6.00, 0.800, 0.250)[1],6), "liter water")
 
 # BasicReactionPredictor("Na + H2O")
-#BasicReactionPredictor("NaOH + H3PO4")
+#BasicReactionPredictor("H3PO4 + NaOH")
 #balancer("H2O + Na --> NaOH + H2", 10,False)
 
 # balancer("Al2(SO4)3 + Ca(OH)2 --> Al(OH)3 + CaSO4",10)

@@ -68,6 +68,12 @@ elif (st.session_state.status == 2):
         CandHguesser = st.button("C and H guesser")
     with col5:
         Stoichiometry  = st.button("Stoichiometry")
+    col6, col7 = st.columns(2)
+    with col6:
+        Dilution = st.button("Dilution")
+    with col7:
+        ReactionPredictor  = st.button("ReactionPredictor ( Might work, might not ¯\_(ツ)_/¯ )")
+    
     if moleculebalancer:
         st.session_state.status = 5
         st.rerun()
@@ -83,7 +89,12 @@ elif (st.session_state.status == 2):
     elif Stoichiometry:
         st.session_state.status = 9
         st.rerun()
-    
+    elif Dilution:
+        st.session_state.status = 10
+        st.rerun()
+    elif ReactionPredictor:
+        st.session_state.status = 11
+        st.rerun()
 
 elif (st.session_state.status == 3):
     st.header("Function INFO")
@@ -578,13 +589,45 @@ elif (st.session_state.status == 9):
     #         # You can do something with the input value if needed
     #         # st.write(f"You entered for {item}: {input_value}")
     # ##if (st.button("submit")):
+elif (st.session_state.status == 10):
+    st.text("Dilution Calculator")
+    v2 = st.number_input("Volume 2 (l)", step=0.000001,  format="%0.6f")
+    c1 = st.number_input("Concentration 1 (mol/V)", step=0.000001,  format="%0.6f")
+    c2 = st.number_input("Concentration 2 (mol/V)", step=0.000001,  format="%0.6f")
+    if (st.button("Enter")):
+        v1, water = Chem.Dilution("mol", c1, c2, v2)
+        st.text("You will need {} liters of your concentration and {} liters \nof water to achieve {} liters with a concentration of {} mol/V".format(round(v1,6),round(water,6),round(v2,6),round( c2,6)))
+elif (st.session_state.status == 11):
+    formula = st.text_input(label="Chemical reaction equation, does not need to be balanced. For example: Na + H2O")
+    if st.button("Enter"):
+        try:
+            formula = formula.split("-->") 
+            try:
+                print(" reaction --> " , formula)
+                sol, molecules_types = Chem.BasicReactionPredictor(formula[0])
+                split_molecules = formula[0].split("+")
+                split_molecules = [string.replace(" ", "") for string in split_molecules]
+            except:
+                sol, molecules_types = Chem.BasicReactionPredictor(formula)
+                split_molecules = formula.split("+")
+                split_molecules = [string.replace(" ", "") for string in split_molecules]
+            
+            st.text("This reaction will create: " + str(sol))
+            for x in range(len(split_molecules)):
+                
+                st.write(split_molecules[x], " : " , molecules_types[x])
+            
+        except:
+            st.write("Seems like this isnt a reaction, or i just havent coded it yet  ¯\_(ツ)_/¯ )  ")
+            pass
+
 if st.session_state.status != 0:
     
 
     if(st.button('Return')):
         if st.session_state.status in [3,4]:
             st.session_state.status = 1    
-        elif st.session_state.status in [5,6,7,8,9]:
+        elif st.session_state.status in [5,6,7,8,9,10,11]:
             st.session_state.status = 2
         else:  
             st.session_state.status = 0
