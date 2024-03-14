@@ -11,6 +11,7 @@ from io import BytesIO
 import re
 from itertools import product
 import time
+
 def MoleculeStable(element1,element2):
     groupI = {"H": [1, 2.1], "Li": [1, 1.0], "Na":[1,0.9], "K":[1,0.8],"Rb":[1,0.8],"Cs":[1,0.7],"Fr":[1,0.7]}        ## element name, all possible positive oxidiation numbers, and then final number is the EN worth
     groupII = {"Be": [2, 1.5], "Mg": [2, 1.2], "Ca":[2,1.0],"Sr":[2,1.0],"Ba":[2,0.9],"Ra":[2,0.9]}
@@ -1112,9 +1113,10 @@ def Stoichiometry(molecules,type, molecule, amount, array, balanced_molecule_lis
         index = balanced_molecule_list.index(molecule)
         print(index)
         molecules.pop(int(index))
+        balanced_molecule_list.remove(molecule)
         #balanced_molecule_list.remove(molecule)
         array.pop(int(index))
-       
+        print("sto-")
         print(balanced_molecule_list)
         print(array)
         
@@ -1184,7 +1186,140 @@ def Stoichiometry(molecules,type, molecule, amount, array, balanced_molecule_lis
             print("done")
         print(solsd)
         return(solsd)
-balancer("H2O + Na --> NaOH + H2", 10,False)
+def BasicReactionPredictor(formula):
+    type_list = []
+    metals = ["Li", "Be", "Na", "Mg", "Al", "K", "Ca", "Sc", "Ti", "V", "Cr", "Mn", "Fe",
+               "Co", "Ni", "Cu", "Zn", "Ga", "Rb", "Sr", "Y", "Zr", "Nb", "Mo", "Tc", "Ru",
+                 "Rh", "Pd", "Ag", "Cd", "In", "Sn", "Sb", "Cs", "Ba", "La", "Ce", "Pr", "Nd",
+                   "Pm", "Sm", "Eu", "Gd", "Tb", "Dy", "Ho", "Er", "Tm", "Yb", "Lu", "Hf", "Ta", 
+                   "W", "Re", "Os", "Ir", "Pt", "Au", "Hg", "Tl", "Pb", "Bi", "Po", "Fr", "Ra", 
+                   "Ac", "Th", "Pa", "U", "Np", "Pu", "Am", "Cm", "Bk", "Cf", "Es", "Fm", "Md", "No", "Lr"]
+    non_metals = [  "Si", "P", "S", "Cl",  "Se", "Br", "Te",
+                    "Rn", "Og","I","H","B","C", "N", "O", "F",]
+    molecules = formula.split("+")
+    for x in range(len(molecules)):
+        molecules[x] = molecules[x].replace(" ", "")
+    print(molecules)
+    
+    for x in molecules:
+        cont = True
+        if x == "H2O" and cont == True:
+            type_list.append("H2O")
+            cont = False
+        if x == "O2"and cont == True :
+            type_list.append("O2")
+            cont = False
+        for y in metals: 
+            if x == y and cont == True:
+                type_list.append("Metal")
+                cont = False
+        for y in metals:
+            if x == y and cont == True:
+                type_list.append("Non Metal")
+                cont = False
+        print(cont)
+        if x != "" and cont == True:
+            type_list.append(moleculeClassifier(x))
+    ## logic 
+    if len(type_list) == 2: ## only if we have 2 molecules, not smart enough atm to do more
+        print("##")
+        print(type_list)
+        if "Metal" in type_list and "O2" in type_list:
+            print("Metal Oxide")
+        elif "Non Metal" in type_list and "O2" in type_list:
+            print("Non Metal Oxide") 
+        elif "Non Metal Oxide" in type_list and "H2O" in type_list:
+            print("Ternary Acid")
+        elif "Metal Oxide" in type_list and "H2O" in type_list:
+            print("Base")
+        elif "Metal Oxide" in type_list and "Non Metal Oxide" in type_list:
+            print("Ternary Salt")
+        elif "Base" in type_list and "Ternary Acid" in type_list:
+            print("Ternary Salt + H2O")
+        else:
+            print("none found")
+    ## for reactions which have 2 molecules ex NaOH + HCl
+    ## determine first type of 
+def moleculeClassifier(molecule): ## eats a full molecule
+    molecule = molecule
+    ## remove all indexes from the molecule, for example CO2 --> CO... Since this funtion only needs to return the type of molecule we dont need to account for if the molecule is balanced.
+    ## wait actually we dont needa to that, the program will just snatch the elements, not the numbers...
+    metals = ["Li", "Be", "Na", "Mg", "Al", "K", "Ca", "Sc", "Ti", "V", "Cr", "Mn", "Fe",
+               "Co", "Ni", "Cu", "Zn", "Ga", "Rb", "Sr", "Y", "Zr", "Nb", "Mo", "Tc", "Ru",
+                 "Rh", "Pd", "Ag", "Cd", "In", "Sn", "Sb", "Cs", "Ba", "La", "Ce", "Pr", "Nd",
+                   "Pm", "Sm", "Eu", "Gd", "Tb", "Dy", "Ho", "Er", "Tm", "Yb", "Lu", "Hf", "Ta", 
+                   "W", "Re", "Os", "Ir", "Pt", "Au", "Hg", "Tl", "Pb", "Bi", "Po", "Fr", "Ra", 
+                   "Ac", "Th", "Pa", "U", "Np", "Pu", "Am", "Cm", "Bk", "Cf", "Es", "Fm", "Md", "No", "Lr"]
+    non_metals = [  "Si", "P", "S", "Cl",  "Se", "Br", "Te",
+                    "Rn", "Og","I","H","B","C", "N", "O", "F",]
+    functional_groups = ["OH", "(OH)"] ## need to have both the versions with paranthesis and without
+    acid_groups = ["PO4", "PO3", "NO3", "NO2", "CO3", "SO4", "SO3", "ClO4", "ClO3", "ClO2", "ClO2", "HSO4"]
+    type_list = []
+    ## logic
+    ## first we might want to check for funtional groups... // we also need to check all of the more-letter elements first, or the system can get confused and for example in NaCl it will snatch carbon, since there is a C
+    ## here we can check for certain things that need to be at the end of a molecule, for example Oxygen for oxides... but since oxygen can also be in the middle of a formula we dont always want that added as an oxide
+    print(molecule)
+    
+    
+    if molecule[0] == "H":
+        type_list.append("Hydrogen_Acid_Start")
+        molecule = molecule[1:]
+    for x in functional_groups:
+        if x in molecule:
+            if x == "OH" or "(OH)":
+                type_list.append("OH-group")
+                molecule = molecule.replace(x, "")
+    for x in acid_groups:
+        if x in molecule:
+            
+            type_list.append("Acid_Group")
+            molecule = molecule.replace(x, "")
+    if molecule[-1] == "O":
+        print("Yummy oxygen 1")
+        type_list.append("Oxide_End")
+        molecule = molecule[:-1]
+    else:
+        try:
+            print(molecule[-1])
+            a = int(molecule[-1]) ## we can use this to check for index.
+            print("Yummy oxygen 2")
+            if molecule[-2] == "O":
+                type_list.append("Oxide_End")
+                molecule = molecule[:-2]
+        except:
+            pass 
+    ## check for non metals
+    for x in metals:
+        if x in molecule:
+            
+            type_list.append("metal")
+            molecule = molecule.replace(x, "")
+
+    for x in non_metals:
+        if x in molecule:
+           
+            type_list.append("non metal")
+            molecule = molecule.replace(x, "")
+    print(type_list)
+    ## logic for determing type of molecule,
+    ## check for oxide?
+    print(len(type_list))
+    if len(type_list) == 2: ## 2 items, for ex oxide and non metal
+        if (type_list[0] == "Oxide_End" and type_list[1] == "metal") or (type_list[1] == "Oxide_End" and type_list[0] == "metal"):
+            return "Metal Oxide"
+        if (type_list[0] == "Oxide_End" and type_list[1] == "non metal") or (type_list[1] == "Oxide_End" and type_list[0] == "non metal"):
+            return "Non Metal Oxide"
+        if (type_list[0] == "Hydrogen_Acid_Start" and type_list[1] == "non metal") or (type_list[1] == "Hydrogen_Acid_Start" and type_list[0] == "non metal"):
+            return "Binary Acid" 
+        if (type_list[0] == "Hydrogen_Acid_Start" and type_list[1] == "Acid_Group") or (type_list[1] == "Hydrogen_Acid_Start" and type_list[0] == "Acid_Group"):
+            return "Ternary Acid" 
+        if (type_list[0] == "OH-group" and type_list[1] == "metal") or (type_list[1] == "OH-group" and type_list[0] == "metal"):
+            return "Base"
+
+
+# BasicReactionPredictor("Na + H2O")
+#BasicReactionPredictor("NaOH + H3PO4")
+#balancer("H2O + Na --> NaOH + H2", 10,False)
 
 # balancer("Al2(SO4)3 + Ca(OH)2 --> Al(OH)3 + CaSO4",10)
 #def CandHguesser(carbon):                        ### ONLY ONE DOUBLE OR TRIPLE BOND!!!   --> not needed anymore.
