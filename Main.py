@@ -682,13 +682,28 @@ elif (st.session_state.status == 12):
     st.write(full_divisor)
     
     if st.button("Calculate"):
-        quotient, rest = Math.take2(input_list, input_listdivisor)
+        quotient, rest, quotients, polynomials, subtractors = Math.take2(input_list, input_listdivisor)
         print("####")
         print(quotient)
         full_quotient = ""
+        full_rest = ""
         ## throw into func
         full_quotient = convert_to_polynomial(quotient)
-        st.write(full_quotient)
+        full_rest = convert_to_polynomial(rest)
+        st.write("q(r)= " + full_quotient)
+        st.write("r(x)= " + full_rest)
+        st.header("Steps")
+        st.write("")
+        st.write(full_poly)
+        spacing = ""
+        for x in range(len(subtractors)):
+            
+            st.write("  " + f"**-({convert_to_polynomial(subtractors[x])})**")
+            st.write("=>" + convert_to_polynomial(polynomials[x]))
+            
+        print(subtractors)
+        print(polynomials)
+        print(quotients)
 
 if st.session_state.status != 0:
     

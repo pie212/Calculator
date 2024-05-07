@@ -395,7 +395,10 @@ def take2(polynomial,divisor):
     polynomial = polynomial     ##  x^3 -8 
     divisor = divisor                  ## x + 2
 
-
+    ## we will use these to show steps at the end
+    quotients = []
+    subtractors = []
+    polynomials = [] 
 
     for x in range(len(polynomial)):
         quotient.append(0)
@@ -404,6 +407,11 @@ def take2(polynomial,divisor):
     print(quotient) ## DEBUG
     while end:
         polynomial, quotient,subtractor, end = attempt_div(polynomial,divisor, quotient )
+        quotients.append(quotient)
+        subtractors.append(subtractor)
+        polynomials.append(polynomial)
+        
+        
         print(polynomial) ## DEBUG
         print(subtractor) ## DEBUG
         print(quotient) ## DEBUG
@@ -432,7 +440,8 @@ def take2(polynomial,divisor):
     print(end) ## DEBUG
     print(rest) ## DEBUG
     quotient.reverse()
-    return quotient, rest
+    polynomial.reverse()
+    return quotient, polynomial , quotients, polynomials, subtractors
 def attempt_div(polynomial, divisor, quotient):
     cont = True
     if polynomial[-1] != 0:
@@ -443,11 +452,13 @@ def attempt_div(polynomial, divisor, quotient):
         subtractor = []
         for y in range(len(polynomial)):    ## initialise the subtractor list (= length is equal to the polynomial) 
             subtractor.append(0)
-        print(subtractor)
         for i in range(len(divisor)):
             subtractor[i + degree] = divisor[i] * multiplier
+        print("subtractor")
+        print(subtractor)
         polynomial = ((numpy.subtract(polynomial, subtractor)).tolist())
         polynomial.pop()
+        print(polynomial)
         if len(polynomial) < len(divisor):
             cont = False
     return polynomial, quotient, subtractor,  cont
