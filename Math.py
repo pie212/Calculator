@@ -3,6 +3,7 @@ import math
 from collections import Counter
 import json
 import time
+import numpy
 ## INPUTS
 function = "0x+2"
 
@@ -381,7 +382,76 @@ def solvemore3func4(*functions):
                 
     return done, checked, totals,intersects,SaveDebugList,elapsedTime,solutions, len(functions)          ## done contains all solutions, checked contains the list of solutions, totals contains the solutions printed out in total, and intersects is the dict with all the interect points that each functions has
        
+## eular division
 
+def take2(polynomial,divisor):
+    quotient = []
+    rest = []
+    end = True
+
+    # divisor = []
+    # polynomial = []
+
+    polynomial = polynomial     ##  x^3 -8 
+    divisor = divisor                  ## x + 2
+
+
+
+    for x in range(len(polynomial)):
+        quotient.append(0)
+    print(polynomial) ## DEBUG
+    print("None") ## DEBUG
+    print(quotient) ## DEBUG
+    while end:
+        polynomial, quotient,subtractor, end = attempt_div(polynomial,divisor, quotient )
+        print(polynomial) ## DEBUG
+        print(subtractor) ## DEBUG
+        print(quotient) ## DEBUG
+    quotient.reverse() ## Reverse the string for readability
+    polynomial.reverse()
+    end = "Quotient is: "
+    for x in range(len(quotient)):
+        if quotient[x] != 0:
+            if len(quotient)-(x+1) == 0:
+                end += str(quotient[x])
+                
+            elif quotient[x] > 0:
+                end += str(quotient[x]) + "x^" + str(len(quotient)-(x+1))  
+            else:
+                end += str(quotient[x]) + "x^" + str(len(quotient)-(x+1))  + "+"
+    rest = "Rest is: "
+    for x in range(len(polynomial)):
+        if polynomial[x] != 0:
+            if x == len(polynomial) -1:
+                rest += str(polynomial[x])
+            elif polynomial[x] < 0:
+                rest += str(polynomial[x]) + "x^" + str(len(polynomial)-(x+1))  
+            else:
+                rest += str(polynomial[x]) + "x^" + str(len(polynomial)-(x+1))  + "+"
+        
+    print(end) ## DEBUG
+    print(rest) ## DEBUG
+    quotient.reverse()
+    return quotient, rest
+def attempt_div(polynomial, divisor, quotient):
+    cont = True
+    if polynomial[-1] != 0:
+        multiplier = polynomial[-1] / divisor[-1]        ## determine the multiplier which we use
+        degree = (len(polynomial) - 1) - (len(divisor) - 1) ## determine the degree
+        quotient[degree] = multiplier                       ## this sets the quotient to be the multiplier and degree so for example x^2 would be multiplier 1 and degree 1, so the list would be [0, 1]
+
+        subtractor = []
+        for y in range(len(polynomial)):    ## initialise the subtractor list (= length is equal to the polynomial) 
+            subtractor.append(0)
+        print(subtractor)
+        for i in range(len(divisor)):
+            subtractor[i + degree] = divisor[i] * multiplier
+        polynomial = ((numpy.subtract(polynomial, subtractor)).tolist())
+        polynomial.pop()
+        if len(polynomial) < len(divisor):
+            cont = False
+    return polynomial, quotient, subtractor,  cont
+# take2([5, -2, 0, 0, 3],[2, 2, 1])
 
 
 

@@ -19,9 +19,23 @@ if 'graphymin' not in st.session_state:
 if 'graphymax' not in st.session_state:
     st.session_state.graphymax = 10
 ## MAIN screen
-
-
-
+def convert_to_superscript(text):
+    return text.replace("^2", "²").replace("^3", "³").replace("^4", "⁴").replace("^5", "⁵").replace("^6", "⁶").replace("^7", "⁷").replace("^8", "⁸").replace("^9", "⁹").replace("^1", "")
+def convert_to_polynomial(input_polynomial):
+    return_string = ""
+    for x in range(len(input_polynomial)):
+        if x == 0:
+            return_string += str(input_polynomial[-(x+1)]) + convert_to_superscript(f"x^{len(input_polynomial) - (x+1)}")
+        else:
+            if input_polynomial[-(x+1)] > 0 and len(input_polynomial) - (x+1) != 0:
+                return_string += "+" + str(input_polynomial[-(x+1)]) + convert_to_superscript(f"x^{len(input_polynomial) - (x+1)}")
+            elif input_polynomial[-(x+1)] > 0 and len(input_polynomial) - (x+1) == 0:
+                return_string += "+" + str(input_polynomial[-(x+1)])
+            elif input_polynomial[-(x+1)] < 0 and len(input_polynomial) - (x+1) != 0:
+                return_string += str(input_polynomial[-(x+1)]) + convert_to_superscript(f"x^{len(input_polynomial) - (x+1)}")
+            else:
+                return_string += str(input_polynomial[-(x+1)]) + convert_to_superscript(f"x^{len(input_polynomial) - (x+1)}")
+    return return_string
 if st.session_state.status == 0:      # 0 = home, 1-4 math, 5 Chem
     st.markdown("<h1 style='text-align: center; color: red;'>Advanced Calculator</h1>", unsafe_allow_html=True)
     st.markdown("")
@@ -49,11 +63,16 @@ elif (st.session_state.status == 1):
         funcinfo = st.button("Function info X^2")
     with col2:
         funcompare = st.button("2 functions X^2")
+    with col3:
+        eular_div = st.button("Eular divison")
     if funcinfo:
         st.session_state.status = 3
         st.rerun()
     elif funcompare:
         st.session_state.status = 4
+        st.rerun()
+    elif eular_div:
+        st.session_state.status = 12
         st.rerun()
 elif (st.session_state.status == 2):
     st.header("Chemistry")
@@ -620,6 +639,56 @@ elif (st.session_state.status == 11):
         except:
             st.write("Seems like this isnt a reaction, or i just havent coded it yet  ¯\_(ツ)_/¯ )  ")
             pass
+elif (st.session_state.status == 12):
+    text = st.header("Eular Division")
+    st.write("Divisible poly")
+    ncol = st.number_input("Highest Degree of polynomial", 0) + 1
+    cols = st.columns(ncol)
+    input_list = []
+    
+    for i, x in enumerate(cols):
+        input_val = x.number_input(f"Input # {i} x",-500,500, key="main" + str(i))
+        if i == 0:
+            x.write(f"{input_val}")
+        elif i == 1:
+            x.write(f"{input_val}x")
+        else:
+             the_x = convert_to_superscript(f"x^{i}")
+             x.write(f"{input_val}" + the_x)
+        input_list.append(input_val)
+    st.write("divider poly")
+    full_poly = ""
+    ## write out the full polynomial
+     ## throw into func
+    full_poly = convert_to_polynomial(input_list)
+    st.write(full_poly)
+    
+    ncol2 = st.number_input("Highest Degree of divisor polynomial", 0) + 1
+    cols2 = st.columns(ncol2)
+    input_listdivisor = []
+    full_divisor = ""
+    for y, z in enumerate(cols2):
+        input_val = z.number_input(f"Input divisor # {y} x",-500,500, key="divisor" + str(y))
+        if y == 0:
+            z.write(f"{input_val}")
+        elif y == 1:
+            z.write(f"{input_val}x")
+        else:
+             the_x = convert_to_superscript(f"x^{y}")
+             z.write(f"{input_val}" + the_x)
+        input_listdivisor.append(input_val)
+     ## throw into func
+    full_divisor = convert_to_polynomial(input_listdivisor)
+    st.write(full_divisor)
+    
+    if st.button("Calculate"):
+        quotient, rest = Math.take2(input_list, input_listdivisor)
+        print("####")
+        print(quotient)
+        full_quotient = ""
+        ## throw into func
+        full_quotient = convert_to_polynomial(quotient)
+        st.write(full_quotient)
 
 if st.session_state.status != 0:
     

@@ -602,7 +602,7 @@ def carboninator(carbon):         ## GENERATES all possible C chains with only H
         
         ####################################### ALKYN #######################################
         if carbon > 1:
-            bonds = carbon/2
+            bonds = carbon/2 ## not an int to check if it is even or uneven
             try:
                 bonds = int(bonds)
             except:
@@ -842,7 +842,7 @@ def balancer(formula, max_value,return_array):
             break
     if False in check_list:
         print("Not possible")
-        return("It seems like this is not possible to balance, or you may need to increase the maximum molecule amount",3, "error")
+        return("It seems like this is not possible to balance, or you may need to increase the maximum molecule amount",3)
         
     ## reconstruct string
         
@@ -1255,6 +1255,9 @@ def BasicReactionPredictor(formula):
         elif "Base" in type_list and "Ternary Acid" in type_list:
             print("Ternary Salt + H2O")
             return("Ternary Salt", type_list)
+        elif "Metal" in type_list and "Non Metal" in type_list:
+            print("Ternary Salt")
+            return("Ternary Salt", type_list)
         # elif "Hydrogen_Acid_Start" in type_list and "Non Metal" in type_list:
         #     print("Binary Acid")
         #     return("Ternary Acid")
@@ -1356,7 +1359,7 @@ def Dilution(ctype, c1, c2, v2):
 # BasicReactionPredictor("Na + H2O")
 #BasicReactionPredictor("H3PO4 + NaOH")
 #balancer("H2O + Na --> NaOH + H2", 10,False)
-
+#balancer("Ca3(PO4) + SiO2 + C --> CaSiO3 + CO + P", 25, False)
 # balancer("Al2(SO4)3 + Ca(OH)2 --> Al(OH)3 + CaSO4",10)
 #def CandHguesser(carbon):                        ### ONLY ONE DOUBLE OR TRIPLE BOND!!!   --> not needed anymore.
     ## old way of doing it
