@@ -647,15 +647,22 @@ elif (st.session_state.status == 12):
     input_list = []
     
     for i, x in enumerate(cols):
-        input_val = x.number_input(f"Input # {i} x",-500,500, key="main" + str(i))
+        print("Check cols")
+        print(len(cols))
+        input_val = x.number_input(f"Input # {len(cols)-i}", key="main" + str(len(cols)-i))
         if i == 0:
-            x.write(f"{input_val}")
-        elif i == 1:
+            # x.write(f"{input_val}")
+            the_x = convert_to_superscript(f"x^{len(cols)-1}")
+            x.write(f"{input_val}" + the_x)
+        elif len(cols)-(i+1)  == 1:
             x.write(f"{input_val}x")
+        elif i == len(cols)-1:
+            x.write(f"{input_val}")
         else:
-             the_x = convert_to_superscript(f"x^{i}")
+             the_x = convert_to_superscript(f"x^{len(cols)-(i+1)}")
              x.write(f"{input_val}" + the_x)
         input_list.append(input_val)
+    input_list.reverse()
     st.write("divider poly")
     full_poly = ""
     ## write out the full polynomial
@@ -667,17 +674,23 @@ elif (st.session_state.status == 12):
     cols2 = st.columns(ncol2)
     input_listdivisor = []
     full_divisor = ""
-    for y, z in enumerate(cols2):
-        input_val = z.number_input(f"Input divisor # {y} x",-500,500, key="divisor" + str(y))
+    for y, z in enumerate(cols2):  ## enumerate works with index and item.. y represents index and z represents item
+        ## ["A", "B"] --> y is 0 and 1 and z is     "A" and "B"
+        ## we can use this instead of indexing every time
+        input_val = z.number_input(f"Input divisor # {len(cols2)-y} x", key="divisor" + str(len(cols2)-y))
         if y == 0:
-            z.write(f"{input_val}")
-        elif y == 1:
+            the_x = convert_to_superscript(f"x^{len(cols2)-1}")
+            z.write(f"{input_val}" + the_x)
+        elif len(cols2) - (y+1) == 1: 
             z.write(f"{input_val}x")
+        elif y == len(cols2) - 1:
+            z.write(f"{input_val}")
         else:
-             the_x = convert_to_superscript(f"x^{y}")
+             the_x = convert_to_superscript(f"x^{len(cols)-(y+1)}")
              z.write(f"{input_val}" + the_x)
         input_listdivisor.append(input_val)
      ## throw into func
+    input_listdivisor.reverse()
     full_divisor = convert_to_polynomial(input_listdivisor)
     st.write(full_divisor)
     
@@ -694,7 +707,7 @@ elif (st.session_state.status == 12):
         st.write("r(x)= " + full_rest)
         st.header("Steps")
         st.write("")
-        st.write(full_poly)
+        st.write( full_poly)
         spacing = ""
         for x in range(len(subtractors)):
             

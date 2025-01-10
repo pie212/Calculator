@@ -777,8 +777,9 @@ def balancer(formula, max_value,return_array):
     ## ["Na", "H", "O"]    <-- Reactants (1)
     ## ["Na", "O", "H","H"] <-- Products (1)
     ## then we just check to make search each atom from reactants is in the products list and vice versa   (2) 
-    print(total_molecules)  
-    print(multipliers)
+    print("tot", str(TotalAtoms)) # --> SHOWS ALL ATOMS IN THE REACTION ONCE, ["Na", "H", "O"]
+    print("Total" , str(total_molecules))  
+    print("Multupliers!" , str(multipliers))
     numbers_range = range(1, max_value)    ## the maximum amount we can go to for balancing the equation, so a maximum of a certain amount of molecules
     # Generate all possible combinations
     all_combinations = list(product(numbers_range, repeat=len(multipliers)))
@@ -1353,9 +1354,19 @@ def Dilution(ctype, c1, c2, v2):
         v1 = (v2 * c2)/ c1
         volume_water = v2-v1
         return(v1, volume_water)
-
+def ReactionDealer(): ## change this name later
+    ## make the table of stuff to see if it dissolves
+    ## 0 == does not disolve ,1 == dissolves, 2 == dissolves badly, 3 == reacts
+    #negative_charged = ["NO3(1-)", "Cl(1-)", "Br(1-)", "I(1-)", "SO4(2-)", "PO4(3-), CO2(2-)", "S(2-)", "OH(1-)"]
+    ## rewrite neg charge as tuple
+    negative_charged = [("NO3", -1), ("Cl", -1), ("Br", -1), ("SO4", -2), ("PO4", -3), ("CO2", -2), ("S", -2), ("OH", -1)]
+    nh4 = (1,[1,1,1,1,1,1,1,1,1]) ## charge and list of dissolve
+    na  = (1,[1,1,1,1,1,1,1,1,1])
+    k   = (1,[1,1,1,1,1,1,1,1,1])
+    mg  = (2,[1,1,1,1,1,0,0,2,0])
+    ##ca  = 
 # print(round(Dilution("mol", 6.00, 0.800, 0.250)[0],6), "l and" , round(Dilution("mol", 6.00, 0.800, 0.250)[1],6), "liter water")
-
+balancer("Na + H2O --> NaOH + H2", 5, False)
 # BasicReactionPredictor("Na + H2O")
 #BasicReactionPredictor("H3PO4 + NaOH")
 #balancer("H2O + Na --> NaOH + H2", 10,False)
