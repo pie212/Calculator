@@ -96,9 +96,15 @@ def zero_rows_down(matrix):
     for x in range(len(zero_rows)):
         matrix.append(zero_rows[x])
     return matrix
-def pivot(row1, row2):
+def pivot(matrix, row_to_pivot,row_piv_numb,row_to_pivot_destination,row_piv_numb_destination):
+    #list, int, list, int
+    
+    matrix[row_piv_numb] = row_to_pivot_destination
+    matrix[row_piv_numb_destination] = row_to_pivot
+    
+    return(matrix)
 def Echelon_Form(matrix):
-    pass
+    
     
         # form matrix
         # matrix = [
@@ -125,15 +131,39 @@ def Echelon_Form(matrix):
   
     for x in range(len(matrix)): ## choose our first row!
         
-        if len(set(matrix[x])) == 1 and matrix[x][0] == 0: ## stops once we encounter 0 row
+        if len(set(matrix[x])) == 1 and matrix[x][0] == 0: ## stops once we encounter 0 row the set matrix checks and removes duplicates, so if all are the same it is 1
             #print("start 0")
             
             break
         for y in range(len(matrix[x])):    ## here we will do an extra control to get the spill, checking the first number to not be 0, until it isnt
-            if matrix[x][y + x] != 0:
+            if matrix[x][y + x] != 0:## if in that row, and in column y+x, the x'st column is the next spill where y is to keep track of how many we skipped
                 spill_row = matrix[x] # the row itself [elements]
                 spill = matrix[x][y+x] # the spill value
                 spill_column = y+x # the colum of the spill
+                break
+            else: ## try to pivot before skipping to next row
+                
+                
+                spill_row = matrix[x]
+                spill_column = y+x
+                #print("passed")
+                row_to_pivot = spill_row
+                row_piv_numb = x
+                
+                for i in range(x+1, len(matrix)):
+                    if matrix[i][spill_column] != 0:
+                        row_to_pivot_destination = matrix[i]
+                        row_piv_numb_destination = i
+                        matrix = pivot(matrix,row_to_pivot,row_piv_numb,row_to_pivot_destination,row_piv_numb_destination)
+                        print("R" + str(row_piv_numb+1) + " = R" + str(row_piv_numb_destination+1))
+                        for l in range(len(matrix)):
+                            print(matrix[l])
+                        
+                        spill = matrix[x][y+x] # the spill value
+                        
+                        break
+                    
+                
                 
                 break
         ## ok so now we have our spill, lets sort our operations for each row
@@ -146,9 +176,9 @@ def Echelon_Form(matrix):
                 ## how do we get to 0?
                 row_to_change = matrix[z]
                 #print(row_to_change)
+              
                 
                 if matrix[z][spill_column] == 0: ## if the elemnt is already 0 we dont needa do anything, WE WILL NEED TO SEE IF WE CAN S.W.A.P ROWS!
-                    #print("passed")
                     pass
                     
                 else:
@@ -165,7 +195,7 @@ def Echelon_Form(matrix):
                     
                     
                     for y in range(columns):
-                        updated_row.append(row_to_change[y] *a + spill_row[y] * b)
+                        updated_row.append((row_to_change[y] *a) + (spill_row[y] * b))
                         
                         
                     matrix[z] = updated_row
@@ -261,7 +291,23 @@ def Determine_Echelon_Type(matrix): ## WITH AGUMENTED ONES!, NON AGUMENTED ONES 
         sol_type = 0
 ## 0 = no solution, 1 = one, 2 infinite
     return sol_type
-            
+def Solve_Chem_Coef(matrix):
+    smallest_numb = 1
+    for x in range(len(matrix)):
+        if abs(matrix[x][-1]) < smallest_numb:
+            print(abs(matrix[x][-1]))
+            smallest_numb = abs(matrix[x][-1])
+    multiplier = 1/smallest_numb
+    array = []
+    for x in range(len(matrix)):
+        add = matrix[x][-1] * multiplier
+        if add > 0:
+            array.append(int(matrix[x][-1] * multiplier))
+        else:
+            array.append(int(matrix[x][-1] * -multiplier))
+    array.append(int(multiplier))     ## goes until every element of the matrix, except last = multiplier
+    print(array)
+
         
        
 def Solve_Echelon_type(matrix, sol_type):

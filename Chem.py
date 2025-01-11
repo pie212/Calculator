@@ -861,12 +861,13 @@ def balancer(formula, max_value,return_array):
     print(TotalAtoms)
     matrix1 = Matrixinator.ChemBalancerRaw_to_Matrix(reactants_list_of_dicts, products_list_of_dicts, TotalAtoms)
     echelon_matrix = Matrixinator.Echelon_Form(matrix1)
-    solution_type = Matrixinator.Determine_Echelon_Type(echelon_matrix)
-    if solution_type == 0:
-        return("It seems like this is not possible to balance, or you may need to increase the maximum molecule amount",3)
-    if solution_type == 2:
-        return("working on the inbfinite solutions!",3)
-    solved_solution = Matrixinator.Solve_Echelon_type(echelon_matrix, solution_type)
+    solved_solution = Matrixinator.Solve_Chem_Coef(echelon_matrix)
+    # solution_type = Matrixinator.Determine_Echelon_Type(echelon_matrix)
+    # if solution_type == 0:
+    #     return("It seems like this is not possible to balance, or you may need to increase the maximum molecule amount",3)
+    # if solution_type == 2:
+    #     return("working on the inbfinite solutions!",3)
+    
     
     seperated = formula.split("-->") ## rebuild the string!
     reactants_for_string = seperated[0].split("+")
@@ -1386,12 +1387,12 @@ def ReactionDealer(): ## change this name later
     ##ca  = 
 # print(round(Dilution("mol", 6.00, 0.800, 0.250)[0],6), "l and" , round(Dilution("mol", 6.00, 0.800, 0.250)[1],6), "liter water")
 #balancer("Na + H2O --> NaOH + H2", 5, False)
-balancer("H2SO4 + HI --> I2+ H2S + H2O", 5, False)
+#balancer("H2SO4 + HI --> H2S + I2 + H2O", 5, False)
 # BasicReactionPredictor("Na + H2O")
 #BasicReactionPredictor("H3PO4 + NaOH")
 #balancer("H2O + Na --> NaOH + H2", 10,False)
-#balancer("Ca3(PO4) + SiO2 + C --> CaSiO3 + CO + P", 25, False)
-# balancer("Al2(SO4)3 + Ca(OH)2 --> Al(OH)3 + CaSO4",10)
+balancer("Ca3(PO4) + SiO2 + C --> CaSiO3 + CO + P4", 25, False)
+#balancer("Al2(SO4)3 + Ca(OH)2 --> Al(OH)3 + CaSO4",10, False)
 #def CandHguesser(carbon):                        ### ONLY ONE DOUBLE OR TRIPLE BOND!!!   --> not needed anymore.
     ## old way of doing it
     
