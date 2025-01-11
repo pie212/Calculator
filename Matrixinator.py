@@ -29,7 +29,8 @@ def x_y_solver(variable_1, variable_2):
     
     return solutions
 
-def ChemBalancerRaw_to_Matrix(reactants, products, TotalAtoms):
+def ChemBalancerRaw_to_Matrix(reactants, products, TotalAtoms): ## returns a non augmented matrix
+    ## returns a #atoms x #molecues matrix
     ## for ex if we have Na + H2O --> NaOH + H2
     ## reactants == [{"Na" : 1},{"H": 2, "O": 1}]
     ## products == [{"Na" : 1, "O" : 1, "H" : 1},{"H": 2}]
@@ -61,12 +62,13 @@ def ChemBalancerRaw_to_Matrix(reactants, products, TotalAtoms):
                 new_row.append(-products[y][current_atom])
             else:
                 new_row.append(0)
-        new_row.append(0) ## this is to add the [x y z | 0] which is always going to be 0, as we moved all the terms away to the side, and due to the fact it is a chemical reaction, no loose integers are left!
+        # new_row.append(0) ## this is to add the [x y z | 0] which is always going to be 0, as we moved all the terms away to the side, and due to the fact it is a chemical reaction, no loose integers are left!
         matrix.append(new_row)
     for x in range(len(matrix)):
         print(TotalAtoms[x], matrix[x])
-
+    return matrix
 def zero_rows_down(matrix):
+    
     # form matrix
         # matrix = [
         # [row1]
@@ -94,7 +96,10 @@ def zero_rows_down(matrix):
     for x in range(len(zero_rows)):
         matrix.append(zero_rows[x])
     return matrix
+def pivot(row1, row2):
 def Echelon_Form(matrix):
+    pass
+    
         # form matrix
         # matrix = [
         # [row1]
@@ -142,7 +147,7 @@ def Echelon_Form(matrix):
                 row_to_change = matrix[z]
                 #print(row_to_change)
                 
-                if matrix[z][spill_column] == 0: ## if the elemnt is already 0 we dont needa do anything
+                if matrix[z][spill_column] == 0: ## if the elemnt is already 0 we dont needa do anything, WE WILL NEED TO SEE IF WE CAN S.W.A.P ROWS!
                     #print("passed")
                     pass
                     
@@ -204,22 +209,78 @@ def Echelon_Form(matrix):
             new_row.append(new_element)
         simplified_matrix.append(new_row)
     
-    # for x in range(rows):
-    #     print(simplified_matrix[x])
+    for x in range(rows):
+        print(simplified_matrix[x])
     return simplified_matrix
 
 
     ## we need to simply the matrix  . it is 12:48 am i will do this tmrw   
-def Solve_Echelon(matrix):
+def Determine_Echelon_Type(matrix): ## WITH AGUMENTED ONES!, NON AGUMENTED ONES IS THE SAME BUT NO columns-1 --> TYPE REFERS TO matrix type, regular or augmented{}
     rows = len(matrix)
     columns = len(matrix[0])
     variables = []
-    for x in range(columns):
-        values = []
-        for y in range(rows):
-            values.append(matrix[y][x])
-        variables.append({x:values})
-    print(variables)
+    zero_rows = 0
+    ## CHECK IF NO UNIQUE SOLUTIONS ARE PRESENT, for agumented rref forms with 0 column as augmented (last column) --> always at least one solution ---> NOT NEEDED YET
+
+    ## check for one unique solution --> rows = unkowns = can have zero rows!
+    ## check rank of each matrix
+    for y in range(rows):
+        zero_row_check = 0
+        
+        for x in range(columns):
+            zero_row_check += matrix[y][x]
+            ##print(zero_row_check)
+        if zero_row_check == 0:
+            zero_rows += 1
+    rank_augmented = rows - zero_rows
+    
+    coefficient_matrix = []
+    for x in range(rows):
+        co_row = matrix.copy()
+        co_row2 = co_row.pop()
+        coefficient_matrix.append(co_row)
+    zero_rows = 0
+    for y in range(rows):
+        zero_row_check = 0
+        
+        for x in range(columns-1): ## since we removed the last (augmented) column
+            zero_row_check += matrix[y][x]
+            ##print(zero_row_check)
+        if zero_row_check == 0:
+            zero_rows += 1
+    rank_A = rows - zero_rows
+    print("Rank Coefficient  Matrix: " + str(rank_A))
+    print("Rank Augmented Matrix: " + str(rank_augmented))
+    sol_type = 0
+    if rank_A == rank_augmented:
+        if rows == rank_A:
+            sol_type = 1
+        else:
+            sol_type = 2
+    else:
+        sol_type = 0
+## 0 = no solution, 1 = one, 2 infinite
+    return sol_type
+            
+        
+       
+def Solve_Echelon_type(matrix, sol_type):
+    rows = len(matrix)
+    columns = len(matrix[0])
+    solutions = [] ## solutions
+    if sol_type == 0:
+        solutions = "It seems like this is not possible to balance, or you may need to increase the maximum molecule amount"
+    if sol_type == 1:
+        for x in range(rows):
+            print("x" + str(x+1) + " = " + str(matrix[x][-1]))
+            solutions.append(matrix[x][-1])
+    return solutions
+    # for x in range(columns):
+    #     values = []
+    #     for y in range(rows):
+    #         values.append(matrix[y][x])
+    #     variables.append({x:values})
+    # print(variables)
         
     
 #ChemBalancerRaw_to_Matrix([{"Na" : 1},{"H": 2, "O": 1}], [{"Na" : 1, "O" : 1, "H" : 1},{"H": 2}], ["Na", "O", "H"])
@@ -230,11 +291,14 @@ def Solve_Echelon(matrix):
 #         [3,6,5,4,32,2]
 #     ]
 # )
+# Echelon_Matrix = Echelon_Form(
+#     [
+#     [1, 0, -1, 0, 0],
+#     [0, 2, -1, -2, 0],
+#     [0, 1, -1, 0, 0]
+#     ]
+# )
 
-Solve_Echelon(
-    [
-        [1,0,0,2,3],
-        [0,1,0,5,3],
-        [0,0,1,2,5],
-    ]
-)
+# solution_type = Determine_Echelon_Type(Echelon_Matrix)
+
+# solved = Solve_Echelon_type(Echelon_Matrix, solution_type)

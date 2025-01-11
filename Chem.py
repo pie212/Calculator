@@ -11,6 +11,7 @@ from io import BytesIO
 import re
 from itertools import product
 import time
+import Matrixinator
 
 def MoleculeStable(element1,element2):
     groupI = {"H": [1, 2.1], "Li": [1, 1.0], "Na":[1,0.9], "K":[1,0.8],"Rb":[1,0.8],"Cs":[1,0.7],"Fr":[1,0.7]}        ## element name, all possible positive oxidiation numbers, and then final number is the EN worth
@@ -765,10 +766,11 @@ def balancer(formula, max_value,return_array):
     ## conservation of atoms (2)
     for x in range(len(all_atoms_reactants)):                   ## checks if the current atom of the reactants list is in the products list    --> law of conservation of atoms
         if all_atoms_reactants[x] not in all_atoms_products:   
-            print("error")
+            print("error law conservation")
             return("The law of conservation of atoms does not seem to be applied here, please ensure that all the atoms in your reactants are also in your products!",2,"error")
     for x in range(len(all_atoms_products)):                    ## checks if the current atom of the products list is in the reactants list  --> law of conservation of atoms
         if all_atoms_products[x] not in all_atoms_reactants:     
+            print("error law conservation")
             return("The law of conservation of atoms does not seem to be applied here, please ensure that all the atoms in your reactants are also in your products!",2,"error")
     TotalAtoms = list(dict.fromkeys(all_atoms_reactants))          ## since the law of conservation of atoms is true at this stage, the used atoms is equal to the ones used in reactants or product
      ## CHECKS CONSERVATION OF ATOMS END
@@ -777,77 +779,94 @@ def balancer(formula, max_value,return_array):
     ## ["Na", "H", "O"]    <-- Reactants (1)
     ## ["Na", "O", "H","H"] <-- Products (1)
     ## then we just check to make search each atom from reactants is in the products list and vice versa   (2) 
-    print("tot", str(TotalAtoms)) # --> SHOWS ALL ATOMS IN THE REACTION ONCE, ["Na", "H", "O"]
-    print("Total" , str(total_molecules))  
-    print("Multupliers!" , str(multipliers))
-    numbers_range = range(1, max_value)    ## the maximum amount we can go to for balancing the equation, so a maximum of a certain amount of molecules
-    # Generate all possible combinations
-    all_combinations = list(product(numbers_range, repeat=len(multipliers)))
-    for x in range(len(all_combinations)):      ## all multipliers
-        #### lists we are going to need 
-        #reactants_list_of_dicts         contains all molecules like so:  [{"Na" : 1} {"Na":2 , "H" : 1}] this is an example but this represents 2 molecules
-        #products_list_of_dicts         contains all molecules like so:  [{"Na" : 1} {"Na":2 , "H" : 1}] this is an example but this represents 2 molecules
-        #TotalAtoms to figure out what atom we are on, looks like  ["Na", "H"]
-        check_list = []      ## we can append bools to see if all atoms match, looks like this for 3 molecule [true,true,true] and then this will be the answer, but if for ex the first item is false we break and start a new array of numbers, saves a bit of computing power
-        for y in range(len(TotalAtoms)):
-            current_molecule = 0
-            current_atom = TotalAtoms[y]           ## current atom we need to equalize so for ex H
-            reactants_amount = 0                   ## will be used to see how many of the current_atom is in each molecule and then in each side... if they are equal then we can continue   gets reset on every new atom
-            product_amount = 0                     ## will be used to see how many of the current_atom is in each molecule and then in each side... if they are equal then we can continue   gets reset on every new atom
-            ### first we need to do it for all reactants
-            for z in range(len(reactants_list_of_dicts)):     ## for the amount of molecules we have
-                try:      ## for amount of items in the reactants list, for for ex [{"Na" : 1}{"H": 2, "O", 1}] will run twice
-                    reactants_amount += reactants_list_of_dicts[z][current_atom] * all_combinations[x][current_molecule]      ## reactants_list_of_dicts[z] is the current dictionary, and [current_atom] is the atom we are looking for, so this returns the value, then we multiply it by its corrective multiplier
-                    ## for the first pass, in the list stated above, and lets say our current atom is H and our array is 2,2,2,2
-                    ## we would check for H in the first dict which only has Na, so we would just add 0 to the reactant amount
-                    ## on the second pass, we would check the second dict which has 2 H atoms, and then multiply it by the current array number, so 2 
-                    ## this would add 4 to the reactants amount.
-                    ## visualsed if we have Na + 2 H2O --> NaOH + H2
-                    ## we have 1 Na atom, 4 H atoms, and 2 O atoms in the reactants
-                    ## this process will repeat for every atom until each atom is sucsesfully equal to each other
-                except:
-                    pass
-                current_molecule += 1
-            for c in range(len(products_list_of_dicts)):     ## for the amount of molecules we have (SEE ABOVE)
-                try:
-                    product_amount += products_list_of_dicts[c][current_atom] * all_combinations[x][current_molecule]      ## reactants_list_of_dicts[c] is the current dictionary, and [current_atom] is the atom we are looking for, so this returns the value, then we multiply it by its corrective multiplier
-                except:
-                    pass
-                current_molecule += 1
-            # if x == 6571:
-            #     print("total atoms: ", str(TotalAtoms))
-            #     print("total molecules react: ", str(reactants_list_of_dicts))
-            #     print("total molecules prod: ", str(reactants_list_of_dicts))
-            #     print(all_combinations[x])
-            #     print(TotalAtoms[y])
-            #     print(reactants_amount)
-            #     print(product_amount)
-            if reactants_amount == product_amount:        ## the rest is a list to check when we are correct, we append a True value to the list and if not a False, we use this to keep track if ALL atoms are equal, not just if one is
-                check_list.append(True)
-                # THIS checks if each amount of molecules is equal, so if we have 4 H atoms in the reactants and 4 H atoms in products
-                # we then pass a True for the H atom, if all the atoms return True that means everything is correct
-                # print("total atoms: ", str(TotalAtoms))
-                # print("total molecules react: ", str(reactants_list_of_dicts))
-                # print("total molecules prod: ", str(reactants_list_of_dicts))
-                # print(all_combinations[x])
-                # print(TotalAtoms[y])
-                # print(reactants_amount)
-                # print(product_amount)
+
+    ##
+    ##
+    ##
+    ## ffs new stuff from matrixinator to be used here!
+    # start comment
+    # print("tot", str(TotalAtoms)) # --> SHOWS ALL ATOMS IN THE REACTION ONCE, ["Na", "H", "O"]
+    # print("Total" , str(total_molecules))  
+    # print("Multupliers!" , str(multipliers))
+    # numbers_range = range(1, max_value)    ## the maximum amount we can go to for balancing the equation, so a maximum of a certain amount of molecules
+    # # Generate all possible combinations
+    # all_combinations = list(product(numbers_range, repeat=len(multipliers)))
+    # for x in range(len(all_combinations)):      ## all multipliers
+    #     #### lists we are going to need 
+    #     #reactants_list_of_dicts         contains all molecules like so:  [{"Na" : 1} {"Na":2 , "H" : 1}] this is an example but this represents 2 molecules
+    #     #products_list_of_dicts         contains all molecules like so:  [{"Na" : 1} {"Na":2 , "H" : 1}] this is an example but this represents 2 molecules
+    #     #TotalAtoms to figure out what atom we are on, looks like  ["Na", "H"]
+    #     check_list = []      ## we can append bools to see if all atoms match, looks like this for 3 molecule [true,true,true] and then this will be the answer, but if for ex the first item is false we break and start a new array of numbers, saves a bit of computing power
+    #     for y in range(len(TotalAtoms)):
+    #         current_molecule = 0
+    #         current_atom = TotalAtoms[y]           ## current atom we need to equalize so for ex H
+    #         reactants_amount = 0                   ## will be used to see how many of the current_atom is in each molecule and then in each side... if they are equal then we can continue   gets reset on every new atom
+    #         product_amount = 0                     ## will be used to see how many of the current_atom is in each molecule and then in each side... if they are equal then we can continue   gets reset on every new atom
+    #         ### first we need to do it for all reactants
+    #         for z in range(len(reactants_list_of_dicts)):     ## for the amount of molecules we have
+    #             try:      ## for amount of items in the reactants list, for for ex [{"Na" : 1}{"H": 2, "O", 1}] will run twice
+    #                 reactants_amount += reactants_list_of_dicts[z][current_atom] * all_combinations[x][current_molecule]      ## reactants_list_of_dicts[z] is the current dictionary, and [current_atom] is the atom we are looking for, so this returns the value, then we multiply it by its corrective multiplier
+    #                 ## for the first pass, in the list stated above, and lets say our current atom is H and our array is 2,2,2,2
+    #                 ## we would check for H in the first dict which only has Na, so we would just add 0 to the reactant amount
+    #                 ## on the second pass, we would check the second dict which has 2 H atoms, and then multiply it by the current array number, so 2 
+    #                 ## this would add 4 to the reactants amount.
+    #                 ## visualsed if we have Na + 2 H2O --> NaOH + H2
+    #                 ## we have 1 Na atom, 4 H atoms, and 2 O atoms in the reactants
+    #                 ## this process will repeat for every atom until each atom is sucsesfully equal to each other
+    #             except:
+    #                 pass
+    #             current_molecule += 1
+    #         for c in range(len(products_list_of_dicts)):     ## for the amount of molecules we have (SEE ABOVE)
+    #             try:
+    #                 product_amount += products_list_of_dicts[c][current_atom] * all_combinations[x][current_molecule]      ## reactants_list_of_dicts[c] is the current dictionary, and [current_atom] is the atom we are looking for, so this returns the value, then we multiply it by its corrective multiplier
+    #             except:
+    #                 pass
+    #             current_molecule += 1
+    #         # if x == 6571:
+    #         #     print("total atoms: ", str(TotalAtoms))
+    #         #     print("total molecules react: ", str(reactants_list_of_dicts))
+    #         #     print("total molecules prod: ", str(reactants_list_of_dicts))
+    #         #     print(all_combinations[x])
+    #         #     print(TotalAtoms[y])
+    #         #     print(reactants_amount)
+    #         #     print(product_amount)
+    #         if reactants_amount == product_amount:        ## the rest is a list to check when we are correct, we append a True value to the list and if not a False, we use this to keep track if ALL atoms are equal, not just if one is
+    #             check_list.append(True)
+    #             # THIS checks if each amount of molecules is equal, so if we have 4 H atoms in the reactants and 4 H atoms in products
+    #             # we then pass a True for the H atom, if all the atoms return True that means everything is correct
+    #             # print("total atoms: ", str(TotalAtoms))
+    #             # print("total molecules react: ", str(reactants_list_of_dicts))
+    #             # print("total molecules prod: ", str(reactants_list_of_dicts))
+    #             # print(all_combinations[x])
+    #             # print(TotalAtoms[y])
+    #             # print(reactants_amount)
+    #             # print(product_amount)
                 
-            else:
-                check_list.append(False)
-        print(all_combinations[x])
-        if False not in check_list:
-            print(all_combinations[x])
-            solved_solution = all_combinations[x]
-            break
-    if False in check_list:
-        print("Not possible")
-        return("It seems like this is not possible to balance, or you may need to increase the maximum molecule amount",3)
-        
+    #         else:
+    #             check_list.append(False)
+    #     print(all_combinations[x])
+    #     if False not in check_list:
+    #         print(all_combinations[x])
+    #         solved_solution = all_combinations[x]
+    #         break
+    # if False in check_list:
+    #     print("Not possible")
+    #     return("It seems like this is not possible to balance, or you may need to increase the maximum molecule amount",3)
+    # end uncomment
     ## reconstruct string
-        
-    
+    ## solved solution is list with solutions
+    print("#################")
+    print(reactants_list_of_dicts)
+    print(products_list_of_dicts)
+    print(TotalAtoms)
+    matrix1 = Matrixinator.ChemBalancerRaw_to_Matrix(reactants_list_of_dicts, products_list_of_dicts, TotalAtoms)
+    echelon_matrix = Matrixinator.Echelon_Form(matrix1)
+    solution_type = Matrixinator.Determine_Echelon_Type(echelon_matrix)
+    if solution_type == 0:
+        return("It seems like this is not possible to balance, or you may need to increase the maximum molecule amount",3)
+    if solution_type == 2:
+        return("working on the inbfinite solutions!",3)
+    solved_solution = Matrixinator.Solve_Echelon_type(echelon_matrix, solution_type)
     
     seperated = formula.split("-->") ## rebuild the string!
     reactants_for_string = seperated[0].split("+")
@@ -1366,7 +1385,8 @@ def ReactionDealer(): ## change this name later
     mg  = (2,[1,1,1,1,1,0,0,2,0])
     ##ca  = 
 # print(round(Dilution("mol", 6.00, 0.800, 0.250)[0],6), "l and" , round(Dilution("mol", 6.00, 0.800, 0.250)[1],6), "liter water")
-balancer("Na + H2O --> NaOH + H2", 5, False)
+#balancer("Na + H2O --> NaOH + H2", 5, False)
+balancer("H2SO4 + HI --> I2+ H2S + H2O", 5, False)
 # BasicReactionPredictor("Na + H2O")
 #BasicReactionPredictor("H3PO4 + NaOH")
 #balancer("H2O + Na --> NaOH + H2", 10,False)
