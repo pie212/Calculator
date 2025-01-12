@@ -96,8 +96,30 @@ def zero_rows_down(matrix):
     for x in range(len(zero_rows)):
         matrix.append(zero_rows[x])
     return matrix
-def pivot(matrix, row_to_pivot,row_piv_numb,row_to_pivot_destination,row_piv_numb_destination):
+def pivot(matrix, x):
     #list, int, list, int
+
+
+    
+    spill_column = x
+    row_to_pivot = matrix[x]
+    row_piv_numb = x
+    ## try to pivot to the next row
+    for i in range(x+1, len(matrix)):
+        if matrix[i][spill_column] != 0:
+            row_to_pivot_destination = matrix[i]
+            row_piv_numb_destination = i
+            matrix[row_piv_numb] = row_to_pivot_destination
+            matrix[row_piv_numb_destination] = row_to_pivot
+            break
+    print("R" + str(row_piv_numb+1) + " = R" + str(row_piv_numb_destination+1))
+    for l in range(len(matrix)):
+        print(matrix[l])
+    print("SWAPPED")
+    spill_row = matrix[i] # the row itself [elements]
+    spill = matrix[i][x] # the spill value
+    spill_column = x # the colum of the spill
+        # spill = matrix[x][i+x] # the spill value
     
     matrix[row_piv_numb] = row_to_pivot_destination
     matrix[row_piv_numb_destination] = row_to_pivot
@@ -135,37 +157,33 @@ def Echelon_Form(matrix):
             #print("start 0")
             
             break
-        for y in range(len(matrix[x])):    ## here we will do an extra control to get the spill, checking the first number to not be 0, until it isnt
-            if matrix[x][y + x] != 0:## if in that row, and in column y+x, the x'st column is the next spill where y is to keep track of how many we skipped
-                spill_row = matrix[x] # the row itself [elements]
-                spill = matrix[x][y+x] # the spill value
-                spill_column = y+x # the colum of the spill
-                break
-            else: ## try to pivot before skipping to next row
+        ##for y in range(len(matrix[x])):    ## here we will do an extra control to get the spill, checking the first number to not be 0, until it isnt
+        if matrix[x][x] != 0:## if in that row, and in column y+x, the x'st column is the next spill where y is to keep track of how many we skipped so for ex if we skip a set
+            spill_row = matrix[x] # the row itself [elements]
+            spill = matrix[x][x] # the spill value
+            spill_column = x # the colum of the spill
+        else:
+            # for k in range(x+1, len(matrix)):
+                ## k is destination
+                ## x is original
+            print("TRY PIVOT R" + str(x) + " TO R" + str(0))
+            matrix = pivot(matrix,x)
+            spill_row = matrix[x] # the row itself [elements]
+            spill = matrix[x][x] # the spill value
+            spill_column = x # the colum of the spill
+                # if matrix[k][x] != 0:## if in that row, and in column y+x, the x'st column is the next spill where y is to keep track of how many we skipped so for ex if we skip a set
+                #     spill_row = matrix[k] # the row itself [elements]
+                #     spill = matrix[k][x] # the spill value
+                #     spill_column = x # the colum of the spill
+        print("THIS IS OUR MATRIX WE WILL EXECUTE OPERATIONS ON")   
+        
+        for n in range(len(matrix)):
+            print(matrix[n])
+        print("##")
                 
                 
-                spill_row = matrix[x]
-                spill_column = y+x
-                #print("passed")
-                row_to_pivot = spill_row
-                row_piv_numb = x
-                
-                for i in range(x+1, len(matrix)):
-                    if matrix[i][spill_column] != 0:
-                        row_to_pivot_destination = matrix[i]
-                        row_piv_numb_destination = i
-                        matrix = pivot(matrix,row_to_pivot,row_piv_numb,row_to_pivot_destination,row_piv_numb_destination)
-                        print("R" + str(row_piv_numb+1) + " = R" + str(row_piv_numb_destination+1))
-                        for l in range(len(matrix)):
-                            print(matrix[l])
-                        
-                        spill = matrix[x][y+x] # the spill value
-                        
-                        break
-                    
                 
                 
-                break
         ## ok so now we have our spill, lets sort our operations for each row
         operations_this_spill_cycle = []
         for z in range(len(matrix)): ## so for each row, except our matrix
@@ -211,7 +229,7 @@ def Echelon_Form(matrix):
         ## lets quickly move down our 0 rows in case we have them
         # need to move the iterator down 1
         matrix_before = matrix
-        matrix = zero_rows_down(matrix)
+        #matrix = zero_rows_down(matrix)
         if matrix_before != matrix:
             x-=1
         print("Matrix operations:")
@@ -292,14 +310,20 @@ def Determine_Echelon_Type(matrix): ## WITH AGUMENTED ONES!, NON AGUMENTED ONES 
 ## 0 = no solution, 1 = one, 2 infinite
     return sol_type
 def Solve_Chem_Coef(matrix):
-    smallest_numb = 1
+    ## need to get rid of 0 rows to get rid of 
+    amount_zero_rows = 0
     for x in range(len(matrix)):
+        if len(set(matrix[x])) == 1 and matrix[x][0] == 0: ## first condition --> all elements are the same, second condition --> first element is 0, if first is 0 and condition 1 is true everything is 0
+            amount_zero_rows += 1
+
+    smallest_numb = 1
+    for x in range(len(matrix)-amount_zero_rows):
         if abs(matrix[x][-1]) < smallest_numb:
             print(abs(matrix[x][-1]))
             smallest_numb = abs(matrix[x][-1])
     multiplier = 1/smallest_numb
     array = []
-    for x in range(len(matrix)):
+    for x in range(len(matrix) - amount_zero_rows):
         add = matrix[x][-1] * multiplier
         if add > 0:
             array.append(int(matrix[x][-1] * multiplier))
