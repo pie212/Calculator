@@ -229,7 +229,7 @@ def Echelon_Form(matrix):
         ## lets quickly move down our 0 rows in case we have them
         # need to move the iterator down 1
         matrix_before = matrix
-        #matrix = zero_rows_down(matrix)
+        matrix = zero_rows_down(matrix)
         if matrix_before != matrix:
             x-=1
         print("Matrix operations:")

@@ -1390,9 +1390,10 @@ def ReactionDealer(): ## change this name later
 #balancer("H2SO4 + HI --> H2S + I2 + H2O", 5, False)
 # BasicReactionPredictor("Na + H2O")
 #BasicReactionPredictor("H3PO4 + NaOH")
+balancer("CH3CH2CH2CH3 +  O2 --> CO2 +  H2O", 1, False)
 #balancer("H2O + Na --> NaOH + H2", 10,False)
 #balancer("Ca3(PO4)2 + SiO2 + C --> CaSiO3 + CO + P4", 25, False)
-balancer("K4Fe(CN)6 + KMnO4 + H2O --> K3Fe(CN)6 + MnO2 + KOH", 25 , False)
+#balancer("KMnO4 + K4Fe(CN)6 + H2O --> MnO2 + K3Fe(CN)6 + KOH", 25 , False)
 #balancer("Al2(SO4)3 + Ca(OH)2 --> Al(OH)3 + CaSO4",10, False)
 #def CandHguesser(carbon):                        ### ONLY ONE DOUBLE OR TRIPLE BOND!!!   --> not needed anymore.
     ## old way of doing it
